@@ -1,0 +1,43 @@
+# CompanyTTS 本地语音工作台
+
+## 放置位置
+
+将 `voice_workbench.py` 和 `启动语音工作台.bat` 放到：
+
+`D:\CompanyTTS\`
+
+目录结构应为：
+
+```text
+D:\CompanyTTS\
+├─ .venv\
+├─ MeloTTS-main\
+├─ OpenVoice-main\
+├─ voice_workbench.py
+└─ 启动语音工作台.bat
+```
+
+## 启动
+
+双击 `启动语音工作台.bat`。
+
+程序固定使用现有 `.venv` 的 Python，并固定使用 CPU。不会执行 pip install，也不会升级/降级 Torch、NumPy 等包。
+
+## 使用
+
+1. 点击“检查环境”确认模型文件与目录齐全。
+2. 点击“加载模型”，等待 MeloTTS 和 OpenVoice V2 加载完成。
+3. 选择角色参考 WAV。
+4. 输入中文台词。
+5. 设置语速、输出目录和文件名。
+6. 点击“生成角色语音”。
+
+最终文件保存在所选目录。中间基础语音也会保留，文件名后缀为 `_melo_base.wav`。
+
+## 重要说明
+
+- 参考音频直接调用 `ToneColorConverter.extract_se()` 提取音色，不使用 `openvoice.se_extractor`。
+- 因此这条流程不依赖 `faster-whisper`、Whisper VAD 或 CUDA。
+- 你之前在 `OpenVoice-main\openvoice\api.py` 修改的 `enable_watermark` 参数处理必须保留；程序会用 `enable_watermark=False` 初始化 converter。
+- 建议使用清晰、单人、无背景音乐的 WAV 参考音频，约 10～30 秒。
+- 本程序不包含自动安装依赖或自动下载模型功能，避免破坏当前已经可用的环境。
