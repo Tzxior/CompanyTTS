@@ -2,6 +2,9 @@
 
 (function () {
   const ASSET = "https://raw.githubusercontent.com/LBEILC/StrongholdAssistant/main/src/ui/public/assets/";
+  const styleNode = document.createElement("style");
+  styleNode.textContent = "\n.operator-card{gap:6px;justify-content:flex-start;padding:5px 8px}\n.operator-avatar{width:34px;height:34px;object-fit:cover;border-radius:6px;flex:0 0 34px;background:#141a21}\n.operator-card.banned{opacity:.58;filter:grayscale(1);border-style:dashed}\n.ban-mark{position:absolute;left:5px;top:4px;background:#7b3038;color:#fff;border-radius:4px;padding:1px 4px;font-size:10px;z-index:1}\n.covenant-button{display:inline-flex;align-items:center;gap:5px}\n.bond-icon{width:20px;height:20px;object-fit:contain;vertical-align:middle}\n.detail-avatar{width:88px;height:88px;object-fit:cover;border-radius:10px;float:right;margin:0 0 12px 14px;background:#141a21}\n.ban-panel{display:flex;flex-direction:column;gap:12px}\n.ban-section,.enemy-card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px}\n.ban-grid,.wave-type-row,.wave-rounds{display:flex;flex-wrap:wrap;gap:7px}\n.ban-op{display:inline-flex;align-items:center;gap:6px;padding:5px 8px}\n.ban-op img{width:26px;height:26px;object-fit:cover;border-radius:5px}\n.ban-op.banned,.ban-covenant.banned{border-color:#d65b67;background:#48272e}\n.wave-type{display:inline-flex;align-items:center;gap:6px}\n.wave-type img{width:23px;height:23px;object-fit:contain}\n.wave-type.active{background:#285044;border-color:var(--accent)}\n.wave-round-button{min-width:42px}\n.enemy-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:8px}\n.enemy-card{display:flex;align-items:center;gap:9px;min-width:0}\n.enemy-card img{width:54px;height:54px;object-fit:contain;flex:0 0 54px;background:#141a21;border-radius:6px}\n.enemy-card.highlighted{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}\n.enemy-card.dimmed{opacity:.35}\n.enemy-card small,.wave-note{display:block;color:var(--muted);margin-top:4px;font-size:12px}\n";
+  document.head.appendChild(styleNode);
   const BOND = {
     "乌萨斯":"ursus","伊比利亚":"iberia","卡西米尔":"kazimierz","叙拉古":"siracusa","炎":"yan","维多利亚":"victoria","莱塔尼亚":"lethania","萨尔贡":"sargon","谢拉格":"kjerag","阿戈尔":"egir","不屈":"indom","助力":"deput","协防干员":"empty","坚守":"stead","奇迹":"mira","奥术":"arcane","投资人":"invest","灵巧":"skillful","独行":"solo","突袭":"raid","精准":"preci","绝技":"sunt","聚合":"doc","调和":"mani","迅捷":"swift","远见":"visi"
   };
@@ -51,7 +54,7 @@
   };
 
   getOperatorRecords = function () {
-    let rows = validOps().filter(op => !banned.has(op.name));
+    let rows = validOps();
     if (selectedCoreCovenant) rows = rows.filter(op => (op.coreCovenants || []).includes(selectedCoreCovenant));
     if (selectedAdditionalCovenant) rows = rows.filter(op => (op.additionalCovenants || []).includes(selectedAdditionalCovenant));
     return rows;
