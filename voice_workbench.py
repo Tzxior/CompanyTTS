@@ -1525,6 +1525,24 @@ class VoiceWorkbench:
         # 克隆模式
         mode = self.mode_var.get()
 
+        try:
+            gen_params = {
+                "temperature": float(self.temperature_var.get()),
+                "top_k": int(self.top_k_var.get()),
+                "top_p": float(self.top_p_var.get()),
+                "repetition_penalty": float(self.repetition_penalty_var.get()),
+                "max_new_tokens": int(self.max_new_tokens_var.get()),
+                "do_sample": bool(self.do_sample_var.get()),
+            }
+            if not (0 < gen_params["temperature"] <= 5): raise ValueError("Temperature 必须在 0 到 5 之间。")
+            if gen_params["top_k"] < 1: raise ValueError("Top K 必须大于等于 1。")
+            if not (0 < gen_params["top_p"] <= 1): raise ValueError("Top P 必须在 0 到 1 之间。")
+            if gen_params["repetition_penalty"] <= 0: raise ValueError("Repetition Penalty 必须大于 0。")
+            if gen_params["max_new_tokens"] < 2: raise ValueError("Max New Tokens 必须大于等于 2。")
+        except Exception as exc:
+            messagebox.showerror("生成参数错误", str(exc))
+            return
+
         # 参考文字稿
         ref_text = self.ref_text.get(
             "1.0",
@@ -1636,7 +1654,8 @@ class VoiceWorkbench:
                 str(ref_path),
                 ref_text,
                 mode,
-                str(output_path)
+                str(output_path),
+                gen_params
             ),
             daemon=True
         ).start()
@@ -1648,7 +1667,8 @@ class VoiceWorkbench:
         ref_audio,
         ref_text,
         mode,
-        output_path
+        output_path,
+        gen_params
     ):
 
         try:
