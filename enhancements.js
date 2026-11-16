@@ -325,8 +325,9 @@
 
   // 读取设备显示分辨率，按物理屏幕方向/比例设置布局类别。
   function applyScreenProfile() {
-    const sw = window.screen && window.screen.width || window.innerWidth;
-    const sh = window.screen && window.screen.height || window.innerHeight;
+    const dpr = window.devicePixelRatio || 1;
+    const sw = Math.round((window.screen && window.screen.width || window.innerWidth) * dpr);
+    const sh = Math.round((window.screen && window.screen.height || window.innerHeight) * dpr);
     const ratio = sw / Math.max(sh, 1);
     const profile = ratio > 1.12 ? "landscape" : ratio < 0.88 ? "portrait" : "square";
     document.documentElement.dataset.screenProfile = profile;
