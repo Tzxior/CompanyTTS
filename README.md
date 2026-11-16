@@ -54,7 +54,7 @@ D:\CompanyTTS\
 **新布局版本的 CMD 启动命令：**
 
 ```bat
-"D:\\CompanyTTS\\Qwen3TTS\\.venv\\Scripts\\python.exe" "D:\\CompanyTTS\\voice_workbench_split.py"
+"D:\CompanyTTS\Qwen3TTS\.venv\Scripts\python.exe" "D:\CompanyTTS\voice_workbench_split.py"
 ```
 
 建议始终使用 Qwen3TTS 独立虚拟环境，不要直接双击 Python 文件，以免 Windows 调用到其他 Python 环境。
