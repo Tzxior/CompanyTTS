@@ -16,7 +16,7 @@ Windows 本地角色语音工作台，当前以 **Qwen3-TTS Base + CPU 推理 + 
 - ICL 模式读取参考音频旁边同名的 `.txt` 文字稿；XVector 不需要文字稿。
 - 模型加载和语音生成在后台线程执行，避免 Tkinter 界面长时间无响应。
 - 输出 WAV，自动避免覆盖已有同名文件。
-- 新增生成监控：任务运行动画、累计耗时、输入字符数、生成音频时长、RTF。
+- 显示六项生成统计：输入字符数、Codec Token ID、平均 Token ID/s、音频时长、总耗时、RTF。
 - 尝试从 Qwen3-TTS 底层返回值统计实际 Codec Token ID 数量，并计算平均 Token ID/s。
 - 新增 Qwen3-TTS 常用生成参数：Temperature、Top K、Top P、Repetition Penalty、Max New Tokens、do_sample。
 
@@ -122,8 +122,7 @@ references\
 
 ## 进度与统计说明
 
-- 进度条目前采用**不定长运行动画**，用于表示任务仍在执行。
-- 当前使用的高层 `generate_voice_clone()` 接口没有向工作台提供可靠的逐 Token 进度回调，因此界面不会伪造 35%、70% 等百分比。
+- 当前使用的高层 `generate_voice_clone()` 接口没有向工作台提供可靠的逐 Token 进度回调，因此新版界面不再显示无实际进度信息的进度条；运行状态和提示写入运行日志。
 - 生成结束后，工作台会尝试从底层模型返回的 Codec 序列读取 Token ID 数量。该数字是返回序列中 Codec Token ID 元素的数量，包含序列中各码本的 ID，不等同于输入文字 Token 数。
 - Token ID/s 是总 Codec Token ID 数除以本次生成耗时得到的平均值，不是实时速度。
 - 音频时长由生成的波形长度和采样率计算。
