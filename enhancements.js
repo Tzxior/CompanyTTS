@@ -473,7 +473,9 @@
 
   const previousRenderListWithIcons = renderList;
   renderList = function() {
-    if (["ban","waves","enemyTypes","theme"].includes(currentTab)) return previousRenderListWithIcons();
+    if (currentTab === "enemyTypes") { renderEnemyTypesPage(); return; }
+    if (currentTab === "theme") { renderThemePage(); return; }
+    if (["ban","waves"].includes(currentTab)) return previousRenderListWithIcons();
     if (["equipment","strategies","covenants"].includes(currentTab)) {
       const records = getRecords(currentTab);
       const keyword = $("#search").value.trim().toLowerCase();
@@ -496,12 +498,6 @@
   $("#list").addEventListener("click", function(event) {
     const theme = event.target.closest("[data-theme-choice]");
     if (theme) { activeTheme = theme.dataset.themeChoice; applyTheme(activeTheme); renderThemePage(); return; }
-    const clear = event.target.closest("#clearBansButton");
-    if (clear) { banned.clear(); renderBanPage(); return; }
-    const op = event.target.closest("[data-ban-operator]");
-    if (op) { toggleBan(op.dataset.banOperator); renderBanPage(); return; }
-    const covenant = event.target.closest("[data-ban-covenant]");
-    if (covenant) { toggleCovenantBan(covenant.dataset.banCovenant); renderBanPage(); return; }
   });
 
   $("#list").addEventListener("input", function(event) {
@@ -512,7 +508,15 @@
     });
   });
 
-  // 新版点击处理器先于原处理器执行，避免 Ban 操作被旧列表事件误判。
+  $("#detail").addEventListener("click", function(event) {
+    const op = event.target.closest("[data-ban-operator]");
+    if (op) {
+      toggleBan(op.dataset.banOperator);
+      renderBanPage();
+    }
+  });
+
+  // 新版导航及主题初始化。
   const tabState = currentTab;
   if (tabState === "operators") {
     renderStats();
