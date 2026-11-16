@@ -34,6 +34,7 @@ import sys
 import threading
 import traceback
 import subprocess
+import time
 from datetime import datetime
 from pathlib import Path
 
@@ -155,9 +156,22 @@ class VoiceWorkbench:
 
         self.output_name_var = tk.StringVar()
 
-        self.status_var = tk.StringVar(
-            value="就绪。请先加载模型。"
-        )
+        self.status_var = tk.StringVar(value="就绪。请先加载模型。")
+        self.temperature_var = tk.StringVar(value="0.9")
+        self.top_k_var = tk.StringVar(value="50")
+        self.top_p_var = tk.StringVar(value="1.0")
+        self.repetition_penalty_var = tk.StringVar(value="1.05")
+        self.max_new_tokens_var = tk.StringVar(value="2048")
+        self.do_sample_var = tk.BooleanVar(value=True)
+        self.elapsed_var = tk.StringVar(value="00:00")
+        self.progress_note_var = tk.StringVar(value="等待生成任务")
+        self.stats_chars_var = tk.StringVar(value="—")
+        self.stats_tokens_var = tk.StringVar(value="—")
+        self.stats_token_speed_var = tk.StringVar(value="—")
+        self.stats_audio_var = tk.StringVar(value="—")
+        self.stats_elapsed_var = tk.StringVar(value="—")
+        self.stats_rtf_var = tk.StringVar(value="—")
+        self.task_started_at = None
 
         # 创建界面
         self._build_ui()
@@ -535,6 +549,23 @@ class VoiceWorkbench:
             padx=5
         )
 
+        advanced = ttk.LabelFrame(gen_frame, text="高级生成参数（仅影响后续生成）", padding=6)
+        advanced.pack(fill="x", pady=(0, 7))
+        for label, variable, width in [
+            ("Temperature", self.temperature_var, 7),
+            ("Top K", self.top_k_var, 6),
+            ("Top P", self.top_p_var, 6),
+            ("Repetition Penalty", self.repetition_penalty_var, 7),
+            ("Max New Tokens", self.max_new_tokens_var, 8),
+        ]:
+            cell = ttk.Frame(advanced)
+            cell.pack(side="left", padx=(0, 9))
+            ttk.Label(cell, text=label).pack(anchor="w")
+            ttk.Entry(cell, textvariable=variable, width=width).pack(anchor="w")
+        ttk.Checkbutton(advanced, text="启用采样", variable=self.do_sample_var).pack(
+            side="left", padx=4, pady=(14, 0)
+        )
+
         # 按钮
 
         buttons = ttk.Frame(gen_frame)
@@ -574,13 +605,33 @@ class VoiceWorkbench:
         )
 
         ttk.Button(
-            buttons,
-            text="清空台词",
-            command=self._clear_target
-        ).pack(
-            side="left",
-            padx=8
+            buttons, text="清空台词", command=self._clear_target
+        ).pack(side="left", padx=8)
+
+        monitor = ttk.LabelFrame(gen_frame, text="生成进度与统计", padding=7)
+        monitor.pack(fill="x", pady=(8, 0))
+        progress_row = ttk.Frame(monitor)
+        progress_row.pack(fill="x")
+        self.progressbar = ttk.Progressbar(progress_row, mode="indeterminate")
+        self.progressbar.pack(side="left", fill="x", expand=True, padx=(0, 8))
+        ttk.Label(progress_row, textvariable=self.elapsed_var, width=10).pack(side="right")
+        ttk.Label(monitor, textvariable=self.progress_note_var, foreground="#666666").pack(
+            anchor="w", pady=(3, 5)
         )
+        stats = ttk.Frame(monitor)
+        stats.pack(fill="x")
+        for index, (label, variable) in enumerate([
+            ("输入字符", self.stats_chars_var),
+            ("Codec Token ID", self.stats_tokens_var),
+            ("Token ID/s", self.stats_token_speed_var),
+            ("音频时长", self.stats_audio_var),
+            ("总耗时", self.stats_elapsed_var),
+            ("RTF", self.stats_rtf_var),
+        ]):
+            cell = ttk.Frame(stats)
+            cell.grid(row=0, column=index, sticky="w", padx=(0, 12))
+            ttk.Label(cell, text=label, foreground="#666666").pack(anchor="w")
+            ttk.Label(cell, textvariable=variable, font=("Segoe UI", 10, "bold")).pack(anchor="w")
 
         # ----------------------------------------------------
         # 状态栏
@@ -758,6 +809,13 @@ class VoiceWorkbench:
         def update():
 
             self.busy = busy
+            if busy:
+                self.task_started_at = time.monotonic()
+                self.progressbar.start(12)
+                self.progress_note_var.set("任务运行中；模型未提供真实百分比进度。")
+                self._tick_elapsed()
+            else:
+                self.progressbar.stop()
 
             if busy:
 
