@@ -399,13 +399,21 @@
     const types = typeData || {};
     const entries = TYPE_ORDER.map(code => {
       const data = types[code] || {};
-      return {code, name: data.name || TYPE_LABEL[code], description: data.description || data.desc || ""};
+      const first = data.firstHalfVariants || [];
+      const second = data.secondHalfVariants || [];
+      return {
+        code,
+        name: data.typeName || TYPE_LABEL[code],
+        icon: data.typeIconPath ? ASSET + data.typeIconPath : ASSET + "data/enemy_types/" + code + ".webp",
+        first,
+        second
+      };
     });
-    $("#list").innerHTML = '<div class="ban-section"><h2>敌人特征分类</h2><p class="wave-note">以下分类来自上游 enemy_types.json，共 ' + entries.length + ' 类。</p><div class="enemy-grid">' +
-      entries.map(t => '<div class="enemy-card"><img src="' + ASSET + 'data/enemy_types/' + t.code + '.webp" alt=""><div><strong>' + esc(t.name) + '</strong><small>' + esc(t.code) + '</small></div></div>').join("") +
+    $("#list").innerHTML = '<div class="ban-section"><h2>敌人特征分类</h2><p class="wave-note">分类名称、图标及对应敌人均读取上游 enemy_types.json，共 ' + entries.length + ' 类。</p><div class="enemy-grid">' +
+      entries.map(t => '<div class="enemy-card"><img src="' + t.icon + '" alt=""><div><strong>' + esc(t.name) + '</strong><small>前半程 ' + t.first.length + ' 种 · 后半程 ' + t.second.length + ' 种</small></div></div>').join("") +
       '</div></div>';
-    $("#detail").innerHTML = '<h2>特征说明</h2><p>选择“敌人波次”页，可通过这些特征对每波候选敌人进行高亮。最多同时选择三类。</p>' +
-      entries.map(t => '<div class="trait"><strong>' + esc(t.name) + '</strong><p class="wave-note">' + esc(t.description || "上游数据未提供额外文字说明。") + '</p></div>').join("");
+    $("#detail").innerHTML = '<h2>各类特征包含的敌人</h2>' +
+      entries.map(t => '<div class="trait"><strong><img src="' + t.icon + '" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;margin-right:6px" alt="">' + esc(t.name) + '</strong><p class="wave-note">前半程：' + (t.first.map(x => esc(x.enemyName)).join("、") || "无") + '</p><p class="wave-note">后半程：' + (t.second.map(x => esc(x.enemyName)).join("、") || "无") + '</p></div>').join("");
   }
 
   // 覆盖切换逻辑，保证所有新增页面都能进入且工具栏状态正确。
