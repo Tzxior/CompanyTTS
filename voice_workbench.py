@@ -1679,6 +1679,22 @@ class VoiceWorkbench:
                 "开始调用 Qwen3-TTS……"
             )
 
+            token_capture = {"count": None}
+            core_model = getattr(self.model, "model", None)
+            original_generate = getattr(core_model, "generate", None)
+            if callable(original_generate):
+                def counted_generate(*args, **kwargs):
+                    result = original_generate(*args, **kwargs)
+                    try:
+                        batches = result[0]
+                        if batches:
+                            codes = batches[0]
+                            token_capture["count"] = int(codes.numel()) if hasattr(codes, "numel") else len(codes)
+                    except Exception:
+                        pass
+                    return result
+                core_model.generate = counted_generate
+
             if mode == "XVector":
                 self._log("使用 XVector 模式：仅使用参考音频提取说话人特征。")
                 wavs, sr = self.model.generate_voice_clone(
@@ -1691,6 +1707,9 @@ class VoiceWorkbench:
                     text=text, language=language, ref_audio=ref_audio,
                     ref_text=ref_text, x_vector_only_mode=False, **gen_params
                 )
+
+            if callable(original_generate):
+                core_model.generate = original_generate
 
             # 检查生成结果
             if wavs is None or len(wavs) == 0:
@@ -1718,9 +1737,15 @@ class VoiceWorkbench:
                 f"采样率：{sr} Hz"
             )
 
-            self._log(
-                f"音频时长：{duration:.2f} 秒"
-            )
+            elapsed = max(time.monotonic() - (self.task_started_at or time.monotonic()), 0.001)
+            token_count = token_capture["count"]
+            token_speed = f"{token_count / elapsed:.2f}" if token_count is not None else "未能读取"
+            rtf = elapsed / duration if duration > 0 else 0.0
+            self._log(f"音频时长：{duration:.2f} 秒")
+            self._log(f"输入字符数：{len(text)}")
+            self._log(f"Codec Token ID 数：{token_count if token_count is not None else '当前接口未能读取'}")
+            self._log(f"总生成耗时：{elapsed:.2f} 秒；Token ID/s：{token_speed}；RTF：{rtf:.2f}")
+            self.root.after(0, lambda: self._show_generation_stats(len(text), token_count, token_speed, duration, elapsed, rtf))
 
             self._set_busy(
                 False,
@@ -1761,6 +1786,25 @@ class VoiceWorkbench:
                     msg + "\n\n详细信息请查看运行日志。"
                 )
             )
+
+    def _tick_elapsed(self):
+        if not self.busy or self.task_started_at is None:
+            return
+        elapsed = max(0, int(time.monotonic() - self.task_started_at))
+        mm, ss = divmod(elapsed, 60)
+        hh, mm = divmod(mm, 60)
+        self.elapsed_var.set(f"{hh:02d}:{mm:02d}:{ss:02d}" if hh else f"{mm:02d}:{ss:02d}")
+        self.root.after(500, self._tick_elapsed)
+
+    def _show_generation_stats(self, chars, tokens, token_speed, audio_duration, elapsed, rtf):
+        self.stats_chars_var.set(str(chars))
+        self.stats_tokens_var.set(str(tokens) if tokens is not None else "未读取")
+        self.stats_token_speed_var.set(token_speed)
+        self.stats_audio_var.set(f"{audio_duration:.2f} 秒")
+        self.stats_elapsed_var.set(f"{elapsed:.2f} 秒")
+        self.stats_rtf_var.set(f"{rtf:.2f}")
+        self.progress_note_var.set("生成完成；进度条仅表示任务状态，不代表百分比。")
+        self.elapsed_var.set(f"{elapsed:.2f}s")
 
     # ========================================================
     # 关闭程序
