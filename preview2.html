@@ -1,0 +1,1504 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>卫戍协议 · 规程助手</title>
+
+<style>
+:root {
+  --bg:#11151b;
+  --panel:#1a2029;
+  --panel2:#222b36;
+  --line:#34404d;
+  --text:#e8edf3;
+  --muted:#9ba9b8;
+  --accent:#75c8ad;
+
+  --tier1:#9299a3;
+  --tier2:#64b879;
+  --tier3:#55a5e8;
+  --tier4:#ad7ce0;
+  --tier5:#e5bd55;
+  --tier6:#e45b5b;
+}
+
+* { box-sizing:border-box; }
+
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:"Microsoft YaHei",Arial,sans-serif;
+}
+
+header {
+  padding:22px 28px;
+  background:#171e27;
+  border-bottom:1px solid var(--line);
+}
+
+header h1 {
+  margin:0;
+  font-size:24px;
+}
+
+header p {
+  color:var(--muted);
+  margin:7px 0 0;
+  font-size:13px;
+}
+
+main {
+  max-width:1600px;
+  margin:auto;
+  padding:22px;
+}
+
+.stats {
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:10px;
+  margin-bottom:20px;
+}
+
+.stat {
+  background:var(--panel);
+  border:1px solid var(--line);
+  padding:13px;
+  border-radius:8px;
+}
+
+.stat b {
+  display:block;
+  font-size:24px;
+}
+
+.stat span {
+  color:var(--muted);
+  font-size:13px;
+}
+
+.tabs {
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-bottom:15px;
+}
+
+button {
+  padding:9px 16px;
+  border:1px solid var(--line);
+  background:var(--panel2);
+  color:var(--text);
+  border-radius:6px;
+  cursor:pointer;
+  font-family:inherit;
+}
+
+button:hover {
+  border-color:var(--accent);
+}
+
+button.active {
+  background:#285044;
+  border-color:var(--accent);
+}
+
+.toolbar {
+  display:flex;
+  flex-direction:column;
+  gap:9px;
+  margin-bottom:15px;
+}
+
+#search {
+  width:100%;
+  padding:11px;
+  border:1px solid var(--line);
+  border-radius:6px;
+  background:var(--panel);
+  color:var(--text);
+}
+
+.covenant-row {
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.covenant-row-label {
+  flex:0 0 76px;
+  padding:9px 0;
+  color:var(--muted);
+  font-size:13px;
+}
+
+.covenant-buttons {
+  display:flex;
+  flex:1;
+  flex-wrap:wrap;
+  gap:6px;
+}
+
+.covenant-button {
+  padding:7px 12px;
+  font-size:13px;
+  border-radius:5px;
+  white-space:nowrap;
+}
+
+.covenant-button.core {
+  border-color:#856c3c;
+}
+
+.covenant-button.additional {
+  border-color:#426c86;
+}
+
+.covenant-button.active {
+  background:#285044;
+  border-color:var(--accent);
+  color:#d8fff0;
+}
+
+.toolbar-bottom {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+#filter {
+  padding:9px;
+  border:1px solid var(--line);
+  border-radius:6px;
+  background:var(--panel);
+  color:var(--text);
+}
+
+#covenantHint {
+  color:var(--muted);
+  font-size:12px;
+}
+
+.content {
+  display:grid;
+  grid-template-columns:minmax(0,1.1fr) minmax(350px,1fr);
+  gap:15px;
+  align-items:start;
+}
+
+.list,.detail {
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:8px;
+}
+
+.list {
+  min-height:350px;
+  max-height:75vh;
+  overflow:auto;
+  padding:12px;
+}
+
+.detail {
+  padding:20px;
+  min-height:350px;
+  max-height:75vh;
+  overflow:auto;
+}
+
+.detail h2 {
+  margin-top:0;
+}
+
+.detail h3 {
+  font-size:15px;
+  margin:22px 0 9px;
+  color:var(--accent);
+}
+
+.tier-group {
+  margin-bottom:17px;
+}
+
+.tier-heading {
+  display:flex;
+  align-items:center;
+  gap:9px;
+  margin:3px 0 10px;
+  padding-bottom:7px;
+  border-bottom:1px solid var(--line);
+  font-size:14px;
+  font-weight:bold;
+}
+
+.tier-heading::before {
+  content:"";
+  width:4px;
+  height:17px;
+  border-radius:3px;
+  background:var(--tier-color);
+}
+
+.tier-count {
+  color:var(--muted);
+  font-size:12px;
+  font-weight:normal;
+}
+
+.operator-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(105px,1fr));
+  gap:8px;
+}
+
+.operator-card {
+  position:relative;
+  min-height:24px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:6px 12px 6px 6px;
+  border:1px solid var(--tier-color);
+  border-radius:10px;
+  background:#202833;
+  cursor:pointer;
+  text-align:center;
+  transition:background .15s,border-color .15s;
+}
+
+.operator-card:hover {
+  background:#303c49;
+  border-width:2px;
+  padding:6px 12px 6px 6px;
+}
+
+.operator-card.selected {
+  background:#30483f;
+  box-shadow:inset 0 0 0 1px var(--accent);
+}
+
+.operator-name {
+  font-size:13px;
+  line-height:1.4;
+  word-break:break-word;
+}
+
+.operator-heart {
+  position:absolute;
+  top:3px;
+  right:5px;
+  font-size:16px;
+  line-height:1;
+  color:#f04455;
+}
+
+.operator-heart.empty {
+  color:#64707d;
+  opacity:.35;
+}
+
+.operator-heart:hover {
+  opacity:1;
+}
+
+.tier-1 { --tier-color:var(--tier1); }
+.tier-2 { --tier-color:var(--tier2); }
+.tier-3 { --tier-color:var(--tier3); }
+.tier-4 { --tier-color:var(--tier4); }
+.tier-5 { --tier-color:var(--tier5); }
+.tier-6 { --tier-color:var(--tier6); }
+
+.item {
+  padding:12px 15px;
+  border-bottom:1px solid var(--line);
+  cursor:pointer;
+}
+
+.item:hover,.item.selected {
+  background:var(--panel2);
+}
+
+.item strong {
+  display:block;
+}
+
+.item small {
+  color:var(--muted);
+}
+
+.pill {
+  display:inline-block;
+  padding:5px 10px;
+  border:1px solid #456b60;
+  border-radius:20px;
+  margin:3px;
+  font-size:12px;
+  cursor:pointer;
+  background:#202c32;
+  color:#c9e9dc;
+}
+
+.pill:hover {
+  background:#285044;
+  border-color:var(--accent);
+}
+
+.trait {
+  background:var(--panel2);
+  padding:11px;
+  margin:8px 0;
+  border-radius:6px;
+}
+
+.trait small {
+  display:block;
+  color:var(--accent);
+  margin-bottom:5px;
+}
+
+.message {
+  color:var(--muted);
+  padding:15px;
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:7px;
+  margin-bottom:15px;
+}
+
+.favorite-btn {
+  margin-top:12px;
+  width:100%;
+  background:#263b35;
+  border-color:#477e6d;
+  color:#a9e5d0;
+}
+
+.favorite-btn.is-favorite {
+  background:#512c35;
+  border-color:#a94d5c;
+  color:#ff9ca8;
+}
+
+.operator-link-grid {
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(105px,1fr));
+  gap:8px;
+}
+
+.operator-link-card {
+  padding:10px 7px;
+  border:1px solid var(--tier-color);
+  border-radius:8px;
+  background:#202833;
+  color:var(--text);
+  text-align:center;
+  cursor:pointer;
+  font-size:13px;
+}
+
+.operator-link-card:hover {
+  background:#30483f;
+}
+
+.empty-message {
+  color:var(--muted);
+  padding:18px 8px;
+  text-align:center;
+  font-size:13px;
+}
+
+footer {
+  color:var(--muted);
+  font-size:12px;
+  padding:25px;
+  text-align:center;
+}
+
+@media(max-width:950px) {
+  .content {
+    grid-template-columns:1fr;
+  }
+
+  .list,.detail {
+    max-height:none;
+  }
+
+  .list {
+    min-height:250px;
+  }
+}
+
+@media(max-width:600px) {
+  main {
+    padding:12px;
+  }
+
+  header {
+    padding:18px;
+  }
+
+  .stats {
+    grid-template-columns:repeat(3,1fr);
+  }
+
+  .covenant-row-label {
+    flex-basis:100%;
+    padding:3px 0;
+  }
+
+  .operator-grid {
+    grid-template-columns:repeat(auto-fill,minmax(90px,1fr));
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>卫戍协议 · 规程助手</h1>
+  <p>独立网页版资料库 · 不读取游戏进程、不注入客户端、不执行游戏操作</p>
+</header>
+
+<main>
+
+<div class="message" id="status">
+  正在加载上游游戏资料……
+</div>
+
+<div class="stats" id="stats"></div>
+
+<div class="tabs" id="tabs">
+  <button class="active" data-tab="operators">盟约干员</button>
+  <button data-tab="covenants">盟约</button>
+  <button data-tab="equipment">装备</button>
+  <button data-tab="strategies">策略</button>
+  <button data-tab="bosses">首领</button>
+  <button data-tab="maps">地图</button>
+  <button data-tab="favorites">收藏干员</button>
+</div>
+
+<div class="toolbar">
+
+  <input id="search" placeholder="搜索干员、盟约、特质、效果……">
+
+  <div id="covenantToolbar">
+
+    <div class="covenant-row">
+      <div class="covenant-row-label">核心盟约</div>
+      <div class="covenant-buttons" id="coreCovenants"></div>
+    </div>
+
+    <div class="covenant-row">
+      <div class="covenant-row-label">附加盟约</div>
+      <div class="covenant-buttons" id="additionalCovenants"></div>
+    </div>
+
+    <div class="toolbar-bottom">
+      <span id="covenantHint">可分别选择核心盟约和附加盟约进行组合筛选</span>
+      <button id="clearCovenants" type="button">清除盟约筛选</button>
+    </div>
+
+  </div>
+
+  <div class="toolbar-bottom">
+    <select id="filter" style="display:none;">
+      <option value="">全部阶级</option>
+    </select>
+  </div>
+
+</div>
+
+<div class="content">
+  <section class="list" id="list"></section>
+
+  <section class="detail" id="detail">
+    <h2>卫戍协议资料库</h2>
+    <p>选择左侧条目查看详细资料。</p>
+  </section>
+</div>
+
+</main>
+
+<footer>
+  数据来源：LBEILC/StrongholdAssistant。
+  本工具与鹰角网络无关联。
+</footer>
+
+<script>
+"use strict";
+
+// ========================================
+// 数据来源
+// ========================================
+
+const DATA_URL =
+  "https://raw.githubusercontent.com/LBEILC/StrongholdAssistant/main/data/";
+
+const DATA_FILES = {
+  operators: "operators.json",
+  covenants: "covenants.json",
+  effects: "covenant_effects.json",
+  equipment: "equipment.json",
+  strategies: "strategies.json",
+  bosses: "bosses.json",
+  maps: "garrison_maps.json"
+};
+
+const DATABASE = {};
+
+let currentTab = "operators";
+let selectedName = null;
+
+let selectedCoreCovenant = "";
+let selectedAdditionalCovenant = "";
+
+// ========================================
+// 收藏
+// ========================================
+
+const FAVORITE_KEY = "stronghold_global_favorites";
+
+function loadFavorites() {
+  try {
+    const saved = JSON.parse(
+      localStorage.getItem(FAVORITE_KEY) || "[]"
+    );
+
+    return new Set(
+      Array.isArray(saved) ? saved : []
+    );
+
+  } catch {
+    return new Set();
+  }
+}
+
+const favoriteOperators = loadFavorites();
+
+function saveFavorites() {
+  try {
+    localStorage.setItem(
+      FAVORITE_KEY,
+      JSON.stringify([...favoriteOperators])
+    );
+  } catch (error) {
+    console.warn("收藏保存失败：", error);
+  }
+}
+
+function isFavorite(name) {
+  return favoriteOperators.has(name);
+}
+
+function toggleFavorite(name) {
+  if (favoriteOperators.has(name)) {
+    favoriteOperators.delete(name);
+  } else {
+    favoriteOperators.add(name);
+  }
+
+  saveFavorites();
+}
+
+// ========================================
+// 基础工具
+// ========================================
+
+const $ = selector => document.querySelector(selector);
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, c => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  })[c]);
+}
+
+function getRecords(type) {
+  if (type === "operators") {
+    return DATABASE.operators?.operators || [];
+  }
+
+  if (type === "covenants") {
+    return DATABASE.covenants?.covenants || [];
+  }
+
+  if (type === "equipment") {
+    return DATABASE.equipment?.equipment || [];
+  }
+
+  if (type === "strategies") {
+    return DATABASE.strategies?.strategies || [];
+  }
+
+  if (type === "bosses") {
+    return DATABASE.bosses?.bosses || [];
+  }
+
+  if (type === "maps") {
+    return DATABASE.maps?.maps || [];
+  }
+
+  if (type === "favorites") {
+    return (DATABASE.operators?.operators || []).filter(op =>
+      favoriteOperators.has(op.name)
+    );
+  }
+
+  return [];
+}
+
+function getName(item) {
+  return item.name ||
+         item.title ||
+         item.mapName ||
+         item.id ||
+         "未命名";
+}
+
+function getSearchText(item) {
+  return JSON.stringify(item).toLowerCase();
+}
+
+function getOperatorByName(name) {
+  return (DATABASE.operators?.operators || [])
+    .find(op => op.name === name);
+}
+
+function getCovenantByName(name) {
+  return (DATABASE.covenants?.covenants || [])
+    .find(c => c.name === name);
+}
+
+function getTierClass(tier) {
+  const value = Number(tier);
+
+  return value >= 1 && value <= 6
+    ? `tier-${value}`
+    : "tier-1";
+}
+
+function renderTags(values, clickable = false) {
+  if (!Array.isArray(values)) return "";
+
+  return values.map(value => {
+    if (clickable) {
+      return `
+        <span
+          class="pill"
+          data-open-covenant="${escapeHTML(value)}"
+        >${escapeHTML(value)}</span>
+      `;
+    }
+
+    return `
+      <span class="pill">${escapeHTML(value)}</span>
+    `;
+  }).join("");
+}
+
+// ========================================
+// 盟约按钮
+// ========================================
+
+function renderCovenantButtons() {
+
+  const covenants = DATABASE.covenants?.covenants || [];
+
+  const core = covenants.filter(c =>
+    c.bondType === "SEASON"
+  );
+
+  const additional = covenants.filter(c =>
+    c.bondType !== "SEASON"
+  );
+
+  $("#coreCovenants").innerHTML = core.map(c => `
+    <button
+      class="covenant-button core ${
+        selectedCoreCovenant === c.name ? "active" : ""
+      }"
+      data-core-covenant="${escapeHTML(c.name)}"
+      type="button"
+    >${escapeHTML(c.name)}</button>
+  `).join("");
+
+  $("#additionalCovenants").innerHTML = additional.map(c => `
+    <button
+      class="covenant-button additional ${
+        selectedAdditionalCovenant === c.name ? "active" : ""
+      }"
+      data-additional-covenant="${escapeHTML(c.name)}"
+      type="button"
+    >${escapeHTML(c.name)}</button>
+  `).join("");
+}
+
+function updateCovenantButtons() {
+  renderCovenantButtons();
+
+  const parts = [];
+
+  if (selectedCoreCovenant) {
+    parts.push("核心：" + selectedCoreCovenant);
+  }
+
+  if (selectedAdditionalCovenant) {
+    parts.push("附加：" + selectedAdditionalCovenant);
+  }
+
+  $("#covenantHint").textContent = parts.length
+    ? "当前筛选：" + parts.join("；")
+    : "可分别选择核心盟约和附加盟约进行组合筛选";
+}
+
+// ========================================
+// 盟约筛选
+// ========================================
+
+function getOperatorRecords() {
+
+  let records = DATABASE.operators?.operators || [];
+
+  if (selectedCoreCovenant) {
+    records = records.filter(op =>
+      (op.coreCovenants || []).includes(selectedCoreCovenant)
+    );
+  }
+
+  if (selectedAdditionalCovenant) {
+    records = records.filter(op =>
+      (op.additionalCovenants || []).includes(
+        selectedAdditionalCovenant
+      )
+    );
+  }
+
+  return records;
+}
+
+// ========================================
+// 详情展示
+// ========================================
+
+function renderDetail(item) {
+
+  if (!item) {
+    return `
+      <h2>选择一个条目</h2>
+      <p style="color:var(--muted)">
+        选择左侧条目查看详细资料。
+      </p>
+    `;
+  }
+
+  let html = `<h2>${escapeHTML(getName(item))}</h2>`;
+
+  // 干员详情
+  if (item.coreCovenants) {
+
+    html += `
+      <p>阶级：${escapeHTML(item.tier)}</p>
+
+      <h3>核心盟约</h3>
+      ${renderTags(item.coreCovenants, true)}
+
+      <h3>附加盟约</h3>
+      ${renderTags(item.additionalCovenants, true)}
+    `;
+
+    const groups = [
+      ["普通特质", item.normal],
+      ["精锐特质", item.elite]
+    ];
+
+    for (const [title, group] of groups) {
+
+      html += `<h3>${title}</h3>`;
+
+      for (const trait of group?.traits || []) {
+        html += `
+          <div class="trait">
+            <small>${escapeHTML(trait.traitType)}</small>
+            ${escapeHTML(trait.traitDescription)}
+          </div>
+        `;
+      }
+    }
+
+    const favorite = isFavorite(item.name);
+
+    html += `
+      <button
+        class="favorite-btn ${favorite ? "is-favorite" : ""}"
+        id="favoriteButton"
+        type="button"
+      >
+        ${favorite ? "❤️ 取消收藏" : "🩶 收藏此干员"}
+      </button>
+    `;
+  }
+
+  // 装备效果
+  if (
+    item.normal?.effectDescription ||
+    item.elite?.effectDescription
+  ) {
+    html += `
+      <h3>普通效果</h3>
+      <div class="trait">
+        ${escapeHTML(item.normal?.effectDescription)}
+      </div>
+
+      <h3>精锐效果</h3>
+      <div class="trait">
+        ${escapeHTML(item.elite?.effectDescription)}
+      </div>
+    `;
+  }
+
+  // 盟约详情
+  if (currentTab === "covenants") {
+
+    const effectData =
+      DATABASE.effects?.covenants?.[getName(item)];
+
+    html += `
+      <p>
+        盟约类型：
+        ${item.bondType === "SEASON" ? "核心盟约" : "附加盟约"}
+      </p>
+
+      <p>
+        激活人数：
+        ${escapeHTML(item.activateCount ?? "未知")}
+      </p>
+    `;
+
+    if (effectData) {
+
+      html += "<h3>盟约效果</h3>";
+
+      if (Array.isArray(effectData)) {
+
+        for (const effect of effectData) {
+          html += `
+            <div class="trait">
+              ${escapeHTML(
+                effect.text || JSON.stringify(effect)
+              )}
+            </div>
+          `;
+        }
+
+      } else {
+
+        html += `
+          <div class="trait">
+            ${escapeHTML(JSON.stringify(effectData))}
+          </div>
+        `;
+      }
+    }
+
+    // 盟约覆盖干员
+    const operators = (DATABASE.operators?.operators || [])
+      .filter(op =>
+        (op.coreCovenants || []).includes(item.name) ||
+        (op.additionalCovenants || []).includes(item.name)
+      )
+      .sort((a,b) => Number(a.tier) - Number(b.tier));
+
+    html += `
+      <h3>覆盖干员（${operators.length}）</h3>
+    `;
+
+    if (operators.length) {
+
+      html += `<div class="operator-link-grid">`;
+
+      for (const op of operators) {
+
+        html += `
+          <button
+            type="button"
+            class="operator-link-card ${getTierClass(op.tier)}"
+            data-open-operator="${escapeHTML(op.name)}"
+          >
+            ${escapeHTML(op.name)}
+            <small style="display:block;color:var(--muted);margin-top:4px">
+              ${escapeHTML(op.tier)} 阶
+            </small>
+          </button>
+        `;
+      }
+
+      html += `</div>`;
+
+    } else {
+
+      html += `
+        <div class="empty-message">
+          暂无覆盖干员资料
+        </div>
+      `;
+    }
+  }
+
+  // 其他资料说明
+  if (item.description) {
+    html += `
+      <h3>详细说明</h3>
+      <div class="trait">
+        ${escapeHTML(item.description)}
+      </div>
+    `;
+  }
+
+  if (item.initiator) {
+    html += `
+      <h3>发起干员</h3>
+      ${escapeHTML(item.initiator)}
+    `;
+  }
+
+  if (item.initialHp !== undefined) {
+    html += `
+      <h3>初始目标生命</h3>
+      ${escapeHTML(item.initialHp)}
+    `;
+  }
+
+  if (item.id) {
+    html += `
+      <p style="color:var(--muted);font-size:12px">
+        数据ID：${escapeHTML(item.id)}
+      </p>
+    `;
+  }
+
+  return html;
+}
+
+// ========================================
+// 干员卡片
+// ========================================
+
+function renderOperatorCards(records) {
+
+  const keyword = $("#search").value.trim().toLowerCase();
+
+  let filtered = records.filter(op => {
+    return !keyword || getSearchText(op).includes(keyword);
+  });
+
+  if (currentTab === "favorites") {
+    filtered = filtered.filter(op => isFavorite(op.name));
+  }
+
+  let html = "";
+
+  for (let tier = 1; tier <= 6; tier++) {
+
+    const tierOperators = filtered.filter(op =>
+      Number(op.tier) === tier
+    );
+
+    if (!tierOperators.length) continue;
+
+    html += `
+      <div class="tier-group">
+        <div class="tier-heading tier-${tier}">
+          ${tier} 阶干员
+          <span class="tier-count">
+            ${tierOperators.length} 人
+          </span>
+        </div>
+
+        <div class="operator-grid">
+    `;
+
+    for (const op of tierOperators) {
+
+      const selected = selectedName === op.name;
+      const favorite = isFavorite(op.name);
+
+      html += `
+        <div
+          class="operator-card tier-${tier} ${
+            selected ? "selected" : ""
+          }"
+          data-operator="${escapeHTML(op.name)}"
+          title="${escapeHTML(op.name)}"
+        >
+
+          <span
+            class="operator-heart ${
+              favorite ? "" : "empty"
+            }"
+            data-favorite="${escapeHTML(op.name)}"
+            title="${favorite ? "取消收藏" : "收藏干员"}"
+          >${favorite ? "❤️" : "🩶"}</span>
+
+          <span class="operator-name">
+            ${escapeHTML(op.name)}
+          </span>
+
+        </div>
+      `;
+    }
+
+    html += `
+        </div>
+      </div>
+    `;
+  }
+
+  if (!html) {
+    html = `
+      <div class="empty-message">
+        没有找到符合条件的干员
+      </div>
+    `;
+  }
+
+  return html;
+}
+
+// ========================================
+// 列表渲染
+// ========================================
+
+function renderList() {
+
+  const list = $("#list");
+
+  if (
+    currentTab === "operators" ||
+    currentTab === "favorites"
+  ) {
+
+    let records = currentTab === "operators"
+      ? getOperatorRecords()
+      : getRecords("favorites");
+
+    list.innerHTML = renderOperatorCards(records);
+
+    if (selectedName) {
+      const selected = getOperatorByName(selectedName);
+
+      if (
+        selected &&
+        records.some(op => op.name === selectedName)
+      ) {
+        $("#detail").innerHTML = renderDetail(selected);
+      } else {
+        $("#detail").innerHTML = renderDetail(null);
+      }
+    } else {
+      $("#detail").innerHTML = renderDetail(null);
+    }
+
+    return;
+  }
+
+  const records = getRecords(currentTab);
+  const keyword = $("#search").value.trim().toLowerCase();
+
+  const filtered = records
+    .map((item,index) => ({item,index}))
+    .filter(({item}) => {
+      return !keyword ||
+        getSearchText(item).includes(keyword);
+    });
+
+  list.innerHTML = filtered.map(({item,index}) => `
+    <div
+      class="item ${
+        selectedName === getName(item) ? "selected" : ""
+      }"
+      data-index="${index}"
+    >
+      <strong>${escapeHTML(getName(item))}</strong>
+      <small>
+        ${escapeHTML(
+          item.coreCovenants?.join(" / ") ||
+          item.bondType ||
+          item.initiator ||
+          item.description ||
+          ""
+        )}
+      </small>
+    </div>
+  `).join("") || `
+    <div class="empty-message">没有找到匹配资料</div>
+  `;
+
+  const selected = records.find(item =>
+    getName(item) === selectedName
+  );
+
+  $("#detail").innerHTML = renderDetail(selected);
+}
+
+// ========================================
+// 打开干员 / 盟约
+// ========================================
+
+function openOperator(name, covenantContext = "") {
+
+  const operator = getOperatorByName(name);
+
+  if (!operator) return;
+
+  currentTab = "operators";
+  selectedName = name;
+
+  if (covenantContext) {
+
+    if ((operator.coreCovenants || []).includes(covenantContext)) {
+      selectedCoreCovenant = covenantContext;
+      selectedAdditionalCovenant = "";
+    } else if (
+      (operator.additionalCovenants || []).includes(covenantContext)
+    ) {
+      selectedAdditionalCovenant = covenantContext;
+      selectedCoreCovenant = "";
+    }
+  }
+
+  updateTabButtons();
+  updateToolbar();
+  updateCovenantButtons();
+  renderList();
+}
+
+function openCovenant(name) {
+
+  const covenant = getCovenantByName(name);
+
+  if (!covenant) return;
+
+  currentTab = "covenants";
+  selectedName = name;
+
+  updateTabButtons();
+  updateToolbar();
+  renderList();
+}
+
+// ========================================
+// 页面切换
+// ========================================
+
+function updateTabButtons() {
+
+  document.querySelectorAll("[data-tab]").forEach(button => {
+    button.classList.toggle(
+      "active",
+      button.dataset.tab === currentTab
+    );
+  });
+}
+
+function updateToolbar() {
+
+  const isOperatorPage =
+    currentTab === "operators" ||
+    currentTab === "favorites";
+
+  $("#covenantToolbar").style.display =
+    currentTab === "operators" ? "" : "none";
+
+  $("#search").placeholder =
+    isOperatorPage
+      ? "搜索干员名称、盟约、特质……"
+      : "搜索名称、盟约、特质、效果……";
+
+  $("#filter").style.display = "none";
+}
+
+function switchTab(tab) {
+
+  currentTab = tab;
+  selectedName = null;
+
+  if (tab === "operators") {
+    selectedCoreCovenant = "";
+    selectedAdditionalCovenant = "";
+  }
+
+  $("#search").value = "";
+
+  updateTabButtons();
+  updateToolbar();
+  updateCovenantButtons();
+  renderList();
+}
+
+// ========================================
+// 统计数据
+// ========================================
+
+function renderStats() {
+
+  const counts = {
+    operators: DATABASE.operators.operators.length,
+    covenants: DATABASE.covenants.covenants.length,
+    equipment: DATABASE.equipment.equipment.length,
+    strategies: DATABASE.strategies.strategies.length,
+    bosses: DATABASE.bosses.bosses.length,
+    maps: DATABASE.maps.maps.length
+  };
+
+  const names = {
+    operators:"干员",
+    covenants:"盟约",
+    equipment:"装备",
+    strategies:"策略",
+    bosses:"首领",
+    maps:"地图"
+  };
+
+  $("#stats").innerHTML = Object.entries(counts)
+    .map(([key,value]) => `
+      <div class="stat">
+        <b>${value}</b>
+        <span>${names[key]}</span>
+      </div>
+    `).join("");
+}
+
+// ========================================
+// 数据加载
+// ========================================
+
+async function loadDatabase() {
+
+  try {
+
+    const tasks = Object.entries(DATA_FILES).map(
+      async ([key,file]) => {
+
+        const response = await fetch(DATA_URL + file);
+
+        if (!response.ok) {
+          throw new Error(
+            `${file} 加载失败：HTTP ${response.status}`
+          );
+        }
+
+        DATABASE[key] = await response.json();
+      }
+    );
+
+    await Promise.all(tasks);
+
+    renderStats();
+    renderCovenantButtons();
+
+    $("#status").textContent =
+      "资料加载完成。数据来自上游公开仓库，请注意数据版本可能与当前游戏版本存在差异。";
+
+    switchTab("operators");
+
+  } catch (error) {
+
+    $("#status").textContent =
+      "数据加载失败：" + error.message +
+      "。请检查网络连接，稍后重试。";
+
+    console.error(error);
+  }
+}
+
+// ========================================
+// 事件
+// ========================================
+
+// 页面导航
+$("#tabs").addEventListener("click", event => {
+
+  const button = event.target.closest("[data-tab]");
+
+  if (button) {
+    switchTab(button.dataset.tab);
+  }
+});
+
+// 搜索
+$("#search").addEventListener("input", () => {
+  renderList();
+});
+
+// 核心盟约按钮
+$("#coreCovenants").addEventListener("click", event => {
+
+  const button = event.target.closest("[data-core-covenant]");
+
+  if (!button) return;
+
+  const name = button.dataset.coreCovenant;
+
+  selectedCoreCovenant =
+    selectedCoreCovenant === name ? "" : name;
+
+  selectedName = null;
+
+  updateCovenantButtons();
+  renderList();
+});
+
+// 附加盟约按钮
+$("#additionalCovenants").addEventListener("click", event => {
+
+  const button = event.target.closest(
+    "[data-additional-covenant]"
+  );
+
+  if (!button) return;
+
+  const name = button.dataset.additionalCovenant;
+
+  selectedAdditionalCovenant =
+    selectedAdditionalCovenant === name ? "" : name;
+
+  selectedName = null;
+
+  updateCovenantButtons();
+  renderList();
+});
+
+// 清除盟约筛选
+$("#clearCovenants").addEventListener("click", () => {
+
+  selectedCoreCovenant = "";
+  selectedAdditionalCovenant = "";
+  selectedName = null;
+
+  updateCovenantButtons();
+  renderList();
+});
+
+// 左侧列表及干员卡片点击
+$("#list").addEventListener("click", event => {
+
+  // 收藏爱心
+  const favoriteButton = event.target.closest("[data-favorite]");
+
+  if (favoriteButton) {
+
+    const name = favoriteButton.dataset.favorite;
+
+    toggleFavorite(name);
+
+    renderList();
+
+    if (
+      selectedName === name &&
+      currentTab === "operators"
+    ) {
+      $("#detail").innerHTML =
+        renderDetail(getOperatorByName(name));
+    }
+
+    return;
+  }
+
+  // 干员卡片
+  const operatorCard = event.target.closest("[data-operator]");
+
+  if (operatorCard) {
+
+    const name = operatorCard.dataset.operator;
+
+    selectedName = name;
+
+    $("#detail").innerHTML =
+      renderDetail(getOperatorByName(name));
+
+    renderList();
+
+    return;
+  }
+
+  // 普通资料列表
+  const itemElement = event.target.closest("[data-index]");
+
+  if (itemElement) {
+
+    const records = getRecords(currentTab);
+    const item = records[Number(itemElement.dataset.index)];
+
+    if (!item) return;
+
+    selectedName = getName(item);
+
+    renderList();
+  }
+});
+
+// 详情区域事件
+$("#detail").addEventListener("click", event => {
+
+  // 收藏按钮
+  if (event.target.closest("#favoriteButton")) {
+
+    const operator = getOperatorByName(selectedName);
+
+    if (!operator) return;
+
+    toggleFavorite(operator.name);
+
+    $("#detail").innerHTML = renderDetail(operator);
+    renderList();
+
+    return;
+  }
+
+  // 点击盟约跳转
+  const covenantButton = event.target.closest(
+    "[data-open-covenant]"
+  );
+
+  if (covenantButton) {
+
+    openCovenant(
+      covenantButton.dataset.openCovenant
+    );
+
+    return;
+  }
+
+  // 点击盟约覆盖干员跳转
+  const operatorButton = event.target.closest(
+    "[data-open-operator]"
+  );
+
+  if (operatorButton) {
+
+    const covenantContext =
+      currentTab === "covenants" ? selectedName : "";
+
+    openOperator(
+      operatorButton.dataset.openOperator,
+      covenantContext
+    );
+  }
+});
+
+// 启动
+loadDatabase();
+
+</script>
+</body>
+</html>
