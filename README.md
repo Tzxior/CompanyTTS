@@ -49,6 +49,14 @@ D:\CompanyTTS\
 
 ## 启动
 
+仓库保留原版 `voice_workbench.py`，新增左右分栏版本 `voice_workbench_split.py`。新版本将角色素材、参考文字稿和生成参数放在左栏，将台词编辑、生成操作、统计和日志放在右栏；顶部路径设置保持全宽。左右分隔条可拖动，左栏内容可独立纵向滚动。两版共用同一套模型、素材和输出目录，不会迁移或改动本地数据。
+
+**新布局版本的 CMD 启动命令：**
+
+```bat
+"D:\\CompanyTTS\\Qwen3TTS\\.venv\\Scripts\\python.exe" "D:\\CompanyTTS\\voice_workbench_split.py"
+```
+
 建议始终使用 Qwen3TTS 独立虚拟环境，不要直接双击 Python 文件，以免 Windows 调用到其他 Python 环境。
 
 CMD 启动命令：
