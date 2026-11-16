@@ -147,7 +147,7 @@
     }
     const rounds = Object.keys(spawnData.rounds || {}).sort((a,b) => Number(a)-Number(b));
     const candidates = (spawnData.rounds && spawnData.rounds[selectedRound]) || [];
-    const filtered = selectedTypes.length ? candidates.filter(e => selectedTypes.includes(e.type)) : candidates;
+    const filtered = candidates;
     $("#list").innerHTML = '<div class="wave-panel">' +
       '<div class="ban-section"><h3>敌人特征（最多同时高亮 3 类）</h3><div class="wave-type-row">' +
       TYPE_ORDER.map(code => '<button type="button" class="wave-type ' + (selectedTypes.includes(code) ? "active" : "") + '" data-enemy-type="' + code + '"><img src="' + ASSET + 'data/enemy_types/' + code + '.webp" alt="">' + esc(TYPE_LABEL[code]) + '</button>').join("") +
@@ -188,10 +188,9 @@
 
   updateToolbar = function () {
     oldUpdateToolbar();
-    if (currentTab === "ban" || currentTab === "waves") {
-      $("#search").style.display = "none";
-      $("#covenantToolbar").style.display = "none";
-    }
+    const specialTab = currentTab === "ban" || currentTab === "waves";
+    $("#search").style.display = specialTab ? "none" : "";
+    if (specialTab) $("#covenantToolbar").style.display = "none";
   };
 
   switchTab = function (tab) {
