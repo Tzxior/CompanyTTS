@@ -94,7 +94,7 @@ class VoiceWorkbench:
         self.root = root
 
         self.root.title(
-            "Qwen3-TTS 角色语音工作台（左右分栏版）"
+            "Qwen3-TTS 角色语音工作台"
         )
 
         self.root.geometry("1280x860")
@@ -156,15 +156,12 @@ class VoiceWorkbench:
 
         self.output_name_var = tk.StringVar()
 
-        self.status_var = tk.StringVar(value="就绪。请先加载模型。")
         self.temperature_var = tk.StringVar(value="0.9")
         self.top_k_var = tk.StringVar(value="50")
         self.top_p_var = tk.StringVar(value="1.0")
         self.repetition_penalty_var = tk.StringVar(value="1.05")
         self.max_new_tokens_var = tk.StringVar(value="2048")
         self.do_sample_var = tk.BooleanVar(value=True)
-        self.elapsed_var = tk.StringVar(value="00:00")
-        self.progress_note_var = tk.StringVar(value="等待生成任务")
         self.stats_chars_var = tk.StringVar(value="—")
         self.stats_tokens_var = tk.StringVar(value="—")
         self.stats_token_speed_var = tk.StringVar(value="—")
@@ -234,9 +231,6 @@ class VoiceWorkbench:
         self.role_combo.grid(row=0, column=1, sticky="ew", pady=4)
         self.role_combo.bind("<<ComboboxSelected>>", self._on_role_selected)
         ttk.Button(ref_frame, text="刷新", command=self.refresh_roles).grid(row=0, column=2, padx=4, pady=4)
-        ttk.Button(ref_frame, text="打开角色文件夹", command=self._open_role_folder).grid(
-            row=1, column=0, columnspan=3, sticky="ew", pady=(2, 5)
-        )
         ttk.Label(ref_frame, text="参考音频：").grid(row=2, column=0, sticky="w", padx=(0, 5), pady=4)
         self.reference_combo = ttk.Combobox(ref_frame, textvariable=self.reference_var, state="readonly")
         self.reference_combo.grid(row=2, column=1, sticky="ew", pady=4)
@@ -250,29 +244,36 @@ class VoiceWorkbench:
         )
         ref_frame.columnconfigure(1, weight=1)
 
-        transcript_frame = ttk.LabelFrame(left, text="参考音频文字稿（仅 ICL 模式需要）", padding=8)
+        transcript_frame = ttk.LabelFrame(left, text="参考音频文字稿", padding=8)
         transcript_frame.pack(fill="x", pady=(0, 8))
         self.ref_text = ScrolledText(transcript_frame, height=6, wrap="word")
         self.ref_text.pack(fill="both", expand=True)
         transcript_buttons = ttk.Frame(transcript_frame)
         transcript_buttons.pack(fill="x", pady=(5, 0))
-        ttk.Button(transcript_buttons, text="读取文字稿", command=self._load_transcript).pack(fill="x", pady=2)
-        ttk.Button(transcript_buttons, text="保存文字稿", command=self._save_transcript).pack(fill="x", pady=2)
-        ttk.Label(transcript_frame, text="文字稿保存在音频旁边的同名 TXT 文件中；XVector 不需要文字稿。",
-                  foreground="#666666", wraplength=380, justify="left").pack(anchor="w", pady=(4, 0))
+        ttk.Button(transcript_buttons, text="读取文字稿", command=self._load_transcript).pack(
+            side="left", fill="x", expand=True, padx=(0, 4)
+        )
+        ttk.Button(transcript_buttons, text="保存文字稿", command=self._save_transcript).pack(
+            side="left", fill="x", expand=True, padx=(4, 0)
+        )
 
         options_frame = ttk.LabelFrame(left, text="生成设置", padding=8)
         options_frame.pack(fill="x", pady=(0, 8))
-        ttk.Label(options_frame, text="生成语言：").pack(anchor="w")
+        language_row = ttk.Frame(options_frame)
+        language_row.pack(fill="x", pady=(0, 6))
+        ttk.Label(language_row, text="生成语言：").pack(side="left")
         self.language_combo = ttk.Combobox(
-            options_frame, textvariable=self.language_var, values=LANGUAGES, state="readonly"
+            language_row, textvariable=self.language_var, values=LANGUAGES, state="readonly", width=18
         )
-        self.language_combo.pack(fill="x", pady=(2, 8))
-        ttk.Label(options_frame, text="克隆模式：").pack(anchor="w")
-        ttk.Radiobutton(options_frame, text="XVector（推荐）", variable=self.mode_var,
-                        value="XVector").pack(anchor="w", pady=2)
-        ttk.Radiobutton(options_frame, text="ICL（需要准确文字稿）", variable=self.mode_var,
-                        value="ICL").pack(anchor="w", pady=2)
+        self.language_combo.pack(side="left", padx=(8, 0))
+
+        mode_row = ttk.Frame(options_frame)
+        mode_row.pack(fill="x")
+        ttk.Label(mode_row, text="克隆模式：").pack(side="left")
+        ttk.Radiobutton(mode_row, text="XVector", variable=self.mode_var,
+                        value="XVector").pack(side="left", padx=(8, 12))
+        ttk.Radiobutton(mode_row, text="ICL", variable=self.mode_var,
+                        value="ICL").pack(side="left")
 
         advanced = ttk.LabelFrame(left, text="高级生成参数", padding=8)
         advanced.pack(fill="x", pady=(0, 8))
@@ -303,7 +304,6 @@ class VoiceWorkbench:
         ttk.Entry(name_row, textvariable=self.output_name_var).pack(
             side="left", fill="x", expand=True, padx=5
         )
-        ttk.Label(name_row, text="留空自动命名", foreground="#666666").pack(side="right")
 
         buttons = ttk.Frame(gen_frame)
         buttons.pack(fill="x", pady=(0, 8))
@@ -314,16 +314,8 @@ class VoiceWorkbench:
         ttk.Button(buttons, text="打开输出目录", command=self._open_output_folder).pack(side="left")
         ttk.Button(buttons, text="清空台词", command=self._clear_target).pack(side="left", padx=7)
 
-        monitor = ttk.LabelFrame(gen_frame, text="生成进度与统计", padding=8)
+        monitor = ttk.LabelFrame(gen_frame, text="生成统计", padding=8)
         monitor.pack(fill="x", pady=(0, 8))
-        progress_row = ttk.Frame(monitor)
-        progress_row.pack(fill="x")
-        self.progressbar = ttk.Progressbar(progress_row, mode="indeterminate")
-        self.progressbar.pack(side="left", fill="x", expand=True, padx=(0, 8))
-        ttk.Label(progress_row, textvariable=self.elapsed_var, width=11).pack(side="right")
-        ttk.Label(monitor, textvariable=self.progress_note_var, foreground="#666666").pack(
-            anchor="w", pady=(3, 6)
-        )
         stats = ttk.Frame(monitor)
         stats.pack(fill="x")
         for index, (label, variable) in enumerate([
@@ -337,12 +329,6 @@ class VoiceWorkbench:
             ttk.Label(cell, textvariable=variable, font=("Segoe UI", 10, "bold")).pack(anchor="w")
         for column in range(3):
             stats.columnconfigure(column, weight=1)
-
-        status_frame = ttk.Frame(gen_frame)
-        status_frame.pack(fill="x", pady=(0, 6))
-        ttk.Label(status_frame, text="状态：").pack(side="left")
-        ttk.Label(status_frame, textvariable=self.status_var, wraplength=650,
-                  justify="left").pack(side="left", fill="x", expand=True)
 
         log_frame = ttk.LabelFrame(gen_frame, text="运行日志", padding=6)
         log_frame.pack(fill="both", expand=True)
@@ -459,12 +445,6 @@ class VoiceWorkbench:
                 append
             )
 
-    def _set_status(self, message):
-        self.root.after(
-            0,
-            lambda: self.status_var.set(message)
-        )
-
     def _set_busy(self, busy, status=None):
 
         def update():
@@ -472,11 +452,6 @@ class VoiceWorkbench:
             self.busy = busy
             if busy:
                 self.task_started_at = time.monotonic()
-                self.progressbar.start(12)
-                self.progress_note_var.set("任务运行中；模型未提供真实百分比进度。")
-                self._tick_elapsed()
-            else:
-                self.progressbar.stop()
 
             if busy:
 
@@ -499,7 +474,7 @@ class VoiceWorkbench:
                 )
 
             if status:
-                self.status_var.set(status)
+                self._log(status)
 
         self.root.after(
             0,
@@ -793,31 +768,6 @@ class VoiceWorkbench:
     # ========================================================
     # 打开文件夹
     # ========================================================
-
-    def _open_role_folder(self):
-
-        role = self.role_var.get()
-
-        if not role:
-
-            messagebox.showinfo(
-                "提示",
-                "请先选择角色。"
-            )
-
-            return
-
-        path = (
-            Path(self.reference_dir_var.get())
-            / role
-        )
-
-        path.mkdir(
-            parents=True,
-            exist_ok=True
-        )
-
-        self._open_path(path)
 
     def _open_reference_location(self):
 
@@ -1447,14 +1397,6 @@ class VoiceWorkbench:
                 )
             )
 
-    def _tick_elapsed(self):
-        if not self.busy or self.task_started_at is None:
-            return
-        elapsed = max(0, int(time.monotonic() - self.task_started_at))
-        mm, ss = divmod(elapsed, 60)
-        hh, mm = divmod(mm, 60)
-        self.elapsed_var.set(f"{hh:02d}:{mm:02d}:{ss:02d}" if hh else f"{mm:02d}:{ss:02d}")
-        self.root.after(500, self._tick_elapsed)
     def _show_generation_stats(self, chars, tokens, token_speed, audio_duration, elapsed, rtf):
         self.stats_chars_var.set(str(chars))
         self.stats_tokens_var.set(str(tokens) if tokens is not None else "未读取")
@@ -1462,8 +1404,6 @@ class VoiceWorkbench:
         self.stats_audio_var.set(f"{audio_duration:.2f} 秒")
         self.stats_elapsed_var.set(f"{elapsed:.2f} 秒")
         self.stats_rtf_var.set(f"{rtf:.2f}")
-        self.progress_note_var.set("生成完成；进度条仅表示任务状态，不代表百分比。")
-        self.elapsed_var.set(f"{elapsed:.2f}s")
 
     # ========================================================
     # 关闭程序
