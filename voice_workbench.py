@@ -97,8 +97,8 @@ class VoiceWorkbench:
             "Qwen3-TTS 角色语音工作台"
         )
 
-        self.root.geometry("1000x850")
-        self.root.minsize(850, 700)
+        self.root.geometry("1100x950")
+        self.root.minsize(950, 800)
 
         # 模型对象
         self.model = None
@@ -629,7 +629,7 @@ class VoiceWorkbench:
             ("RTF", self.stats_rtf_var),
         ]):
             cell = ttk.Frame(stats)
-            cell.grid(row=0, column=index, sticky="w", padx=(0, 12))
+            cell.grid(row=index // 3, column=index % 3, sticky="w", padx=(0, 18), pady=2)
             ttk.Label(cell, text=label, foreground="#666666").pack(anchor="w")
             ttk.Label(cell, textvariable=variable, font=("Segoe UI", 10, "bold")).pack(anchor="w")
 
@@ -1687,9 +1687,11 @@ class VoiceWorkbench:
                     result = original_generate(*args, **kwargs)
                     try:
                         batches = result[0]
-                        if batches:
+                        if isinstance(batches, (list, tuple)) and len(batches) > 0:
                             codes = batches[0]
                             token_capture["count"] = int(codes.numel()) if hasattr(codes, "numel") else len(codes)
+                        elif hasattr(batches, "numel"):
+                            token_capture["count"] = int(batches.numel())
                     except Exception:
                         pass
                     return result
