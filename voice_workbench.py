@@ -1679,39 +1679,17 @@ class VoiceWorkbench:
                 "开始调用 Qwen3-TTS……"
             )
 
-            # ------------------------------------------------
-            # XVector 模式
-            # ------------------------------------------------
-
             if mode == "XVector":
-
-                self._log(
-                    "使用 XVector 模式：仅使用参考音频提取说话人特征。"
-                )
-
+                self._log("使用 XVector 模式：仅使用参考音频提取说话人特征。")
                 wavs, sr = self.model.generate_voice_clone(
-                    text=text,
-                    language=language,
-                    ref_audio=ref_audio,
-                    x_vector_only_mode=True,
+                    text=text, language=language, ref_audio=ref_audio,
+                    x_vector_only_mode=True, **gen_params
                 )
-
-            # ------------------------------------------------
-            # ICL 模式
-            # ------------------------------------------------
-
             else:
-
-                self._log(
-                    "使用 ICL 模式：使用参考音频、参考文字稿及说话人特征。"
-                )
-
+                self._log("使用 ICL 模式：使用参考音频、参考文字稿及说话人特征。")
                 wavs, sr = self.model.generate_voice_clone(
-                    text=text,
-                    language=language,
-                    ref_audio=ref_audio,
-                    ref_text=ref_text,
-                    x_vector_only_mode=False,
+                    text=text, language=language, ref_audio=ref_audio,
+                    ref_text=ref_text, x_vector_only_mode=False, **gen_params
                 )
 
             # 检查生成结果
