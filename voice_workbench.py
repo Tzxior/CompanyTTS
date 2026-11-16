@@ -1695,21 +1695,22 @@ class VoiceWorkbench:
                     return result
                 core_model.generate = counted_generate
 
-            if mode == "XVector":
-                self._log("使用 XVector 模式：仅使用参考音频提取说话人特征。")
-                wavs, sr = self.model.generate_voice_clone(
-                    text=text, language=language, ref_audio=ref_audio,
-                    x_vector_only_mode=True, **gen_params
-                )
-            else:
-                self._log("使用 ICL 模式：使用参考音频、参考文字稿及说话人特征。")
-                wavs, sr = self.model.generate_voice_clone(
-                    text=text, language=language, ref_audio=ref_audio,
-                    ref_text=ref_text, x_vector_only_mode=False, **gen_params
-                )
-
-            if callable(original_generate):
-                core_model.generate = original_generate
+            try:
+                if mode == "XVector":
+                    self._log("使用 XVector 模式：仅使用参考音频提取说话人特征。")
+                    wavs, sr = self.model.generate_voice_clone(
+                        text=text, language=language, ref_audio=ref_audio,
+                        x_vector_only_mode=True, **gen_params
+                    )
+                else:
+                    self._log("使用 ICL 模式：使用参考音频、参考文字稿及说话人特征。")
+                    wavs, sr = self.model.generate_voice_clone(
+                        text=text, language=language, ref_audio=ref_audio,
+                        ref_text=ref_text, x_vector_only_mode=False, **gen_params
+                    )
+            finally:
+                if callable(original_generate):
+                    core_model.generate = original_generate
 
             # 检查生成结果
             if wavs is None or len(wavs) == 0:
