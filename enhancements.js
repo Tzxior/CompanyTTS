@@ -331,15 +331,6 @@
     const ratio = sw / Math.max(sh, 1);
     const profile = ratio > 1.12 ? "landscape" : ratio < 0.88 ? "portrait" : "square";
     document.documentElement.dataset.screenProfile = profile;
-    let chip = document.getElementById("resolutionChip");
-    if (!chip) {
-      chip = document.createElement("span");
-      chip.id = "resolutionChip";
-      chip.className = "resolution-chip";
-      const header = document.querySelector("header");
-      if (header) header.appendChild(chip);
-    }
-    if (chip) chip.textContent = sw + " × " + sh + " · " + (profile === "landscape" ? "横屏" : profile === "portrait" ? "竖屏" : "方屏");
   }
   applyScreenProfile();
   window.addEventListener("resize", applyScreenProfile);
@@ -558,6 +549,8 @@
   const refinementStyle = document.createElement("style");
   refinementStyle.textContent = `
     header{background:var(--header-bg)!important;padding:10px 16px!important;min-height:42px!important;border-bottom:1px solid var(--line)}
+    html[data-screen-profile="portrait"] .content,html[data-screen-profile="square"] .content{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) minmax(0,1fr)}
+    html[data-screen-profile="landscape"] .content{grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);grid-template-rows:minmax(0,1fr)}
     header h1{font-size:19px!important;margin:0!important;line-height:1.2}
     header p,#resolutionChip,#status,#stats{display:none!important}
     body{display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden}
