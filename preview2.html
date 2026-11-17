@@ -1500,6 +1500,793 @@ $("#detail").addEventListener("click", event => {
 loadDatabase();
 
 </script>
-  <script src="./enhancements.js?v=20261117-2"></script>
+  <script>
+/* ===== 原 enhancements.js 内嵌开始 ===== */
+"use strict";
+
+(function () {
+  const ASSET = "https://raw.githubusercontent.com/LBEILC/StrongholdAssistant/main/src/ui/public/assets/";
+  const styleNode = document.createElement("style");
+  styleNode.textContent = "\n.operator-card{gap:6px;justify-content:flex-start;padding:5px 8px}\n.operator-avatar{width:34px;height:34px;object-fit:cover;border-radius:6px;flex:0 0 34px;background:#141a21}\n.operator-card.banned{opacity:.58;filter:grayscale(1);border-style:dashed}\n.ban-mark{position:absolute;left:5px;top:4px;background:#7b3038;color:#fff;border-radius:4px;padding:1px 4px;font-size:10px;z-index:1}\n.covenant-button{display:inline-flex;align-items:center;gap:5px}\n.bond-icon{width:20px;height:20px;object-fit:contain;vertical-align:middle}\n.detail-avatar{width:88px;height:88px;object-fit:cover;border-radius:10px;float:right;margin:0 0 12px 14px;background:#141a21}\n.ban-panel{display:flex;flex-direction:column;gap:12px}\n.ban-section,.enemy-card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px}\n.ban-grid,.wave-type-row,.wave-rounds{display:flex;flex-wrap:wrap;gap:7px}\n.ban-op{display:inline-flex;align-items:center;gap:6px;padding:5px 8px}\n.ban-op img{width:26px;height:26px;object-fit:cover;border-radius:5px}\n/* Ban 卡片选中态由末尾主题规则统一控制 */\n.wave-type{display:inline-flex;align-items:center;gap:6px}\n.wave-type img{width:23px;height:23px;object-fit:contain}\n.wave-type.active{background:#285044;border-color:var(--accent)}\n.wave-round-button{min-width:42px}\n.enemy-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:8px}\n.enemy-card{display:flex;align-items:center;gap:9px;min-width:0}\n.enemy-card img{width:54px;height:54px;object-fit:contain;flex:0 0 54px;background:#141a21;border-radius:6px}\n.enemy-card.highlighted{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}\n.enemy-card.dimmed{opacity:.35}\n.enemy-card small,.wave-note{display:block;color:var(--muted);margin-top:4px;font-size:12px}\n";
+  document.head.appendChild(styleNode);
+  const BOND = {
+    "乌萨斯":"ursus","伊比利亚":"iberia","卡西米尔":"kazimierz","叙拉古":"siracusa","炎":"yan","维多利亚":"victoria","莱塔尼亚":"lethania","萨尔贡":"sargon","谢拉格":"kjerag","阿戈尔":"egir","不屈":"indom","助力":"deput","协防干员":"empty","坚守":"stead","奇迹":"mira","奥术":"arcane","投资人":"invest","灵巧":"skillful","独行":"solo","突袭":"raid","精准":"preci","绝技":"sunt","聚合":"doc","调和":"mani","迅捷":"swift","远见":"visi"
+  };
+  const TYPE_ORDER = ["SPECIAL","FLY","TIMES","ELEMENT","DOT","INVISIBLE","REFLECTION","CRITIC","REBORN"];
+  const TYPE_LABEL = {SPECIAL:"特异",FLY:"飞行",TIMES:"频次",ELEMENT:"元素",DOT:"持续",INVISIBLE:"隐匿",REFLECTION:"折射",CRITIC:"致命",REBORN:"复苏"};
+  const banned = new Set();
+  let selectedTypes = [];
+  let selectedRound = "1";
+  let spawnData = null;
+  let typeData = null;
+  const $ = s => document.querySelector(s);
+  const esc = v => String(v == null ? "" : v).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const opImg = name => ASSET + "data/operators/" + encodeURIComponent(name) + ".webp";
+  const enemyImg = id => ASSET + "data/enemies/" + id + ".webp";
+  const bossImg = id => ASSET + "data/bosses/" + id + ".webp";
+  const bondImg = name => ASSET + "game/bond/" + (BOND[name] || "empty") + ".png";
+  const validOps = () => (DATABASE.operators && DATABASE.operators.operators || []).filter(op => (op.normal && op.normal.traits || []).length || (op.elite && op.elite.traits || []).length);
+  const covenantOps = name => validOps().filter(op => (op.coreCovenants || []).includes(name) || (op.additionalCovenants || []).includes(name));
+  const oldRenderStats = renderStats;
+  const oldRenderCovenants = renderCovenantButtons;
+  const oldRenderDetail = renderDetail;
+  const oldRenderCards = renderOperatorCards;
+  const oldRenderList = renderList;
+  const oldSwitchTab = switchTab;
+  const oldUpdateToolbar = updateToolbar;
+  const oldGetOperatorRecords = getOperatorRecords;
+  const oldGetRecords = getRecords;
+  const oldGetOperatorByName = getOperatorByName;
+
+  function filterOutExtras() {
+    if (DATABASE.operators && Array.isArray(DATABASE.operators.operators)) {
+      DATABASE.operators.operators = validOps();
+    }
+  }
+
+  renderStats = function () {
+    filterOutExtras();
+    return oldRenderStats();
+  };
+
+  renderCovenantButtons = function () {
+    oldRenderCovenants();
+    document.querySelectorAll("[data-core-covenant],[data-additional-covenant]").forEach(btn => {
+      const name = btn.dataset.coreCovenant || btn.dataset.additionalCovenant;
+      btn.insertAdjacentHTML("afterbegin", '<img class="bond-icon" src="' + bondImg(name) + '" alt="">');
+    });
+  };
+
+  getOperatorRecords = function () {
+    let rows = validOps();
+    if (selectedCoreCovenant) rows = rows.filter(op => (op.coreCovenants || []).includes(selectedCoreCovenant));
+    if (selectedAdditionalCovenant) rows = rows.filter(op => (op.additionalCovenants || []).includes(selectedAdditionalCovenant));
+    return rows;
+  };
+
+  getRecords = function (type) {
+    if (type === "operators") return validOps();
+    if (type === "favorites") return validOps().filter(op => favoriteOperators.has(op.name));
+    return oldGetRecords(type);
+  };
+
+  getOperatorByName = function (name) {
+    return validOps().find(op => op.name === name);
+  };
+
+  renderTags = function (values, clickable) {
+    if (!Array.isArray(values)) return "";
+    return values.map(value => '<span class="pill"' + (clickable ? ' data-open-covenant="' + esc(value) + '"' : "") + '><img src="' + bondImg(value) + '" style="width:17px;height:17px;object-fit:contain;vertical-align:middle;margin-right:4px" alt="">' + esc(value) + '</span>').join("");
+  };
+
+  renderDetail = function (item) {
+    let html = oldRenderDetail(item);
+    if (item && item.coreCovenants) {
+      html = '<img class="detail-avatar" src="' + opImg(item.name) + '" alt=""><div class="ban-state">' +
+        (banned.has(item.name) ? '<b style="color:#ff8994">⛔ 已加入 Ban 名单</b>' : '<span style="color:var(--muted)">当前未 Ban</span>') +
+        '<button type="button" id="toggleDetailBan" style="display:block;margin:9px 0">' + (banned.has(item.name) ? "取消 Ban" : "Ban 此干员") + '</button></div>' + html;
+    } else if (item && item.enemyId) {
+      html = '<img class="detail-avatar" src="' + bossImg(item.enemyId) + '" alt="">' + html;
+    }
+    return html;
+  };
+
+  renderOperatorCards = function (records) {
+    const keyword = $("#search").value.trim().toLowerCase();
+    let filtered = records.filter(op => !keyword || getSearchText(op).includes(keyword));
+    if (currentTab === "favorites") filtered = filtered.filter(op => favoriteOperators.has(op.name));
+    let html = "";
+    for (let tier = 1; tier <= 6; tier++) {
+      const rows = filtered.filter(op => Number(op.tier) === tier);
+      if (!rows.length) continue;
+      html += '<div class="tier-group"><div class="tier-heading tier-' + tier + '">' + tier + ' 阶干员 <span class="tier-count">' + rows.length + ' 人</span></div><div class="operator-grid">';
+      rows.forEach(op => {
+        const fav = favoriteOperators.has(op.name);
+        const isBanned = banned.has(op.name);
+        html += '<div class="operator-card tier-' + tier + (selectedName === op.name ? ' selected' : '') + (isBanned ? ' banned' : '') + '" data-operator="' + esc(op.name) + '" title="' + esc(op.name) + '">' +
+          (isBanned ? '<span class="ban-mark">BAN</span>' : '') +
+          '<img class="operator-avatar" src="' + opImg(op.name) + '" alt="" loading="lazy">' +
+          '<span class="operator-name">' + esc(op.name) + '</span>' +
+          '<span class="operator-heart ' + (fav ? '' : 'empty') + '" data-favorite="' + esc(op.name) + '" title="' + (fav ? "取消收藏" : "收藏干员") + '">' + (fav ? "❤️" : "🩶") + '</span></div>';
+      });
+      html += '</div></div>';
+    }
+    return html || '<div class="empty-message">没有找到符合条件的干员</div>';
+  };
+
+  function toggleBan(name) {
+    if (banned.has(name)) banned.delete(name);
+    else banned.add(name);
+  }
+
+  function toggleCovenantBan(name) {
+    const members = covenantOps(name);
+    const allBanned = members.length > 0 && members.every(op => banned.has(op.name));
+    members.forEach(op => allBanned ? banned.delete(op.name) : banned.add(op.name));
+  }
+
+  function renderBanPage() {
+    const covenants = DATABASE.covenants && DATABASE.covenants.covenants || [];
+    const ops = validOps();
+    const bannedOps = ops.filter(op => banned.has(op.name));
+    $("#list").innerHTML = '<div class="ban-panel">' +
+      '<div class="ban-section"><h3>按盟约 Ban</h3><p class="wave-note">点击盟约，将其覆盖的全部干员加入或移出 Ban 名单。</p><div class="ban-grid">' +
+      covenants.map(c => {
+        const members = covenantOps(c.name);
+        const count = members.filter(op => banned.has(op.name)).length;
+        return '<button type="button" class="ban-covenant ' + (count === members.length && count ? "banned" : "") + '" data-ban-covenant="' + esc(c.name) + '"><img class="bond-icon" src="' + bondImg(c.name) + '" alt="">' + esc(c.name) + ' <small>' + count + '/' + members.length + '</small></button>';
+      }).join("") +
+      '</div></div><div class="ban-section"><h3>单独 Ban 干员</h3><div class="ban-grid">' +
+      ops.map(op => '<button type="button" class="ban-op ' + (banned.has(op.name) ? "banned" : "") + '" data-ban-operator="' + esc(op.name) + '"><img src="' + opImg(op.name) + '" alt="" loading="lazy">' + esc(op.name) + '</button>').join("") +
+      '</div></div></div>';
+    $("#detail").innerHTML = '<h2>当前 Ban 名单（' + bannedOps.length + '）</h2><button type="button" id="clearBansButton">一键清空 Ban</button>' +
+      (bannedOps.length ? '<div class="ban-grid" style="margin-top:12px">' + bannedOps.map(op => '<button type="button" class="ban-op banned" data-ban-operator="' + esc(op.name) + '"><img src="' + opImg(op.name) + '" alt="">' + esc(op.name) + ' ×</button>').join("") + '</div>' : '<p class="empty-message">当前没有 Ban 干员</p>');
+  }
+
+  function renderWavePage() {
+    if (!spawnData || !typeData) {
+      $("#list").innerHTML = '<div class="empty-message">敌人波次数据加载中……</div>';
+      $("#detail").innerHTML = '<p class="wave-note">正在读取上游波次资料。</p>';
+      return;
+    }
+    const rounds = Object.keys(spawnData.rounds || {}).sort((a,b) => Number(a)-Number(b));
+    const candidates = (spawnData.rounds && spawnData.rounds[selectedRound]) || [];
+    const filtered = candidates;
+    $("#list").innerHTML = '<div class="wave-panel">' +
+      '<div class="ban-section"><h3>敌人特征（最多同时高亮 3 类）</h3><div class="wave-type-row">' +
+      TYPE_ORDER.map(code => '<button type="button" class="wave-type ' + (selectedTypes.includes(code) ? "active" : "") + '" data-enemy-type="' + code + '"><img src="' + ASSET + 'data/enemy_types/' + code + '.webp" alt="">' + esc(TYPE_LABEL[code]) + '</button>').join("") +
+      '<button type="button" id="clearEnemyTypes">取消全部高亮</button></div></div>' +
+      '<div class="ban-section"><h3>波次</h3><div class="wave-rounds">' +
+      rounds.map(n => '<button type="button" class="wave-round-button ' + (selectedRound === n ? "active" : "") + '" data-round="' + n + '">' + n + '</button>').join("") +
+      '<button type="button" class="wave-round-button ' + (selectedRound === "14" ? "active" : "") + '" data-round="14">14 · 首领</button><button type="button" class="wave-round-button ' + (selectedRound === "15" ? "active" : "") + '" data-round="15">15 · 首领</button>' +
+      '</div></div>';
+    if (selectedRound === "14" || selectedRound === "15") {
+      const bosses = spawnData.endgame && spawnData.endgame[selectedRound] || [];
+      $("#list").innerHTML += '<div class="ban-section"><h3>第 ' + selectedRound + ' 回合首领</h3><div class="enemy-grid">' +
+        bosses.map(b => '<div class="enemy-card"><img src="' + bossImg(b.bossKey) + '" alt=""><div><strong>' + esc(b.name) + '</strong><small>' + esc(b.stageId || "") + '</small></div></div>').join("") + '</div></div></div>';
+      $("#detail").innerHTML = '<h2>首领回合</h2><p>该回合首领及其关卡标识来自上游 endgame 数据。</p>' +
+        bosses.map(b => '<div class="trait"><strong>' + esc(b.name) + '</strong><p class="wave-note">' + (b.actions || []).map(a => esc(a.enemy) + ' × ' + a.count + '（' + esc(a.gate) + '）').join("；") + '</p></div>').join("");
+      return;
+    }
+    $("#list").innerHTML += '<div class="ban-section"><h3>第 ' + selectedRound + ' 波 · ' + filtered.length + ' 种候选敌人</h3><p class="wave-note">权重与概率采用上游数据；选择特征后，符合的敌人高亮显示，其余候选仍保留。</p><div class="enemy-grid">' +
+      filtered.map(e => '<div class="enemy-card ' + (selectedTypes.length ? (selectedTypes.includes(e.type) ? "highlighted" : "dimmed") : "") + '"><img src="' + enemyImg(e.key) + '" alt="" loading="lazy"><div><strong>' + esc(e.name) + '</strong><small>' + esc(TYPE_LABEL[e.type] || e.type) + ' · 权重 ' + esc(e.weight) + ' · 概率 ' + (Number(e.prob || 0) * 100).toFixed(1) + '%</small></div></div>').join("") +
+      '</div></div></div>';
+    $("#detail").innerHTML = '<h2>第 ' + selectedRound + ' 波次详情</h2><p>候选敌人共 ' + candidates.length + ' 种。点击敌人特征按钮可同时选择最多三类进行高亮筛选。</p>' +
+      filtered.slice(0, 35).map(e => '<div class="trait"><strong>' + esc(e.name) + '</strong><p class="wave-note">' + (e.acts || []).map(a => esc(a.enemy) + ' × ' + a.count + '（' + esc(a.gate) + '）').join("；") + '</p></div>').join("");
+  }
+
+  renderList = function () {
+    if (currentTab === "ban") { renderBanPage(); return; }
+    if (currentTab === "waves") { renderWavePage(); return; }
+    if (currentTab === "bosses") {
+      const records = getRecords("bosses");
+      const keyword = $("#search").value.trim().toLowerCase();
+      const filtered = records.map((item,index) => ({item,index})).filter(x => !keyword || getSearchText(x.item).includes(keyword));
+      $("#list").innerHTML = filtered.map(x => '<div class="item ' + (selectedName === getName(x.item) ? "selected" : "") + '" data-index="' + x.index + '"><img src="' + bossImg(x.item.enemyId) + '" style="width:42px;height:42px;object-fit:contain;vertical-align:middle;margin-right:9px" alt=""><strong style="display:inline">' + esc(getName(x.item)) + '</strong></div>').join("");
+      const selected = records.find(x => getName(x) === selectedName);
+      $("#detail").innerHTML = renderDetail(selected);
+      return;
+    }
+    return oldRenderList();
+  };
+
+  updateToolbar = function () {
+    oldUpdateToolbar();
+    const specialTab = currentTab === "ban" || currentTab === "waves";
+    $("#search").style.display = specialTab ? "none" : "";
+    if (specialTab) $("#covenantToolbar").style.display = "none";
+  };
+
+  switchTab = function (tab) {
+    if (tab !== "ban" && tab !== "waves") return oldSwitchTab(tab);
+    currentTab = tab;
+    selectedName = null;
+    $("#search").value = "";
+    updateTabButtons();
+    updateToolbar();
+    renderList();
+  };
+
+  // Capture clicks first so banned operators cannot be selected.
+  $("#list").addEventListener("click", function (event) {
+    const card = event.target.closest("[data-operator]");
+    if (card && banned.has(card.dataset.operator)) {
+      event.stopImmediatePropagation();
+      return;
+    }
+  }, true);
+
+  $("#list").addEventListener("click", function (event) {
+    const covenant = event.target.closest("[data-ban-covenant]");
+    if (covenant) { toggleCovenantBan(covenant.dataset.banCovenant); renderBanPage(); return; }
+    const operator = event.target.closest("[data-ban-operator]");
+    if (operator) { toggleBan(operator.dataset.banOperator); renderBanPage(); return; }
+    const type = event.target.closest("[data-enemy-type]");
+    if (type) {
+      const code = type.dataset.enemyType;
+      if (selectedTypes.includes(code)) selectedTypes = selectedTypes.filter(x => x !== code);
+      else if (selectedTypes.length < 3) selectedTypes.push(code);
+      renderWavePage(); return;
+    }
+    const round = event.target.closest("[data-round]");
+    if (round) { selectedRound = round.dataset.round; renderWavePage(); return; }
+    if (event.target.closest("#clearEnemyTypes")) { selectedTypes = []; renderWavePage(); }
+  });
+
+  $("#detail").addEventListener("click", function (event) {
+    if (event.target.closest("#clearBansButton")) { banned.clear(); renderBanPage(); return; }
+    if (event.target.closest("#toggleDetailBan")) {
+      const op = getOperatorByName(selectedName);
+      if (op) { toggleBan(op.name); renderList(); }
+    }
+  });
+
+  // The upstream JSON contains temporary/out-of-roster entries with no traits.
+  // Filter them once the original database fetch has completed.
+  const poll = window.setInterval(function () {
+    if (DATABASE.operators && DATABASE.operators.operators && DATABASE.covenants) {
+      filterOutExtras();
+      window.clearInterval(poll);
+      renderStats();
+      renderCovenantButtons();
+      if (currentTab === "operators") renderList();
+    }
+  }, 100);
+
+  Promise.all([
+    fetch("https://raw.githubusercontent.com/LBEILC/StrongholdAssistant/main/data/garrison_spawns.json").then(r => { if (!r.ok) throw new Error("garrison_spawns.json"); return r.json(); }),
+    fetch("https://raw.githubusercontent.com/LBEILC/StrongholdAssistant/main/data/enemy_types.json").then(r => { if (!r.ok) throw new Error("enemy_types.json"); return r.json(); })
+  ]).then(values => {
+    spawnData = values[0];
+    typeData = values[1].types || {};
+    if (currentTab === "waves") renderWavePage();
+  }).catch(error => {
+    console.error("敌人资料加载失败", error);
+    if (currentTab === "waves") $("#list").innerHTML = '<div class="empty-message">敌人资料加载失败，请检查网络连接。</div>';
+  });
+
+  // ===== 固定视口布局、屏幕方向检测、主题、补齐导航与图标 =====
+  const layoutStyle = document.createElement("style");
+  layoutStyle.textContent = `
+    html,body{width:100%;height:100%;height:100dvh;overflow:hidden}
+    body{display:flex;flex-direction:column;min-height:0}
+    header{flex:0 0 auto;padding:8px 16px;display:flex;align-items:center;gap:12px;min-height:46px}
+    header h1{font-size:18px;white-space:nowrap}
+    header p{margin:0;font-size:11px;line-height:1.35}
+    main{width:100%;max-width:none;flex:1 1 auto;min-height:0;overflow:hidden;padding:8px 14px;display:flex;flex-direction:column;gap:7px}
+    #status{flex:0 0 auto;margin:0;padding:5px 9px;font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .stats{flex:0 0 auto;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin:0}
+    .stat{padding:5px 9px;border-radius:6px}
+    .stat b{font-size:16px}.stat span{font-size:10px}
+    .tabs{flex:0 0 auto;gap:5px;margin:0;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;padding-bottom:2px}
+    .tabs button{flex:0 0 auto;padding:6px 11px;font-size:12px;white-space:nowrap}
+    .toolbar{flex:0 0 auto;gap:5px;margin:0;min-height:0}
+    #search{padding:7px 9px;font-size:12px}
+    .covenant-row{gap:4px}.covenant-row-label{flex-basis:64px;padding:5px 0;font-size:11px}
+    .covenant-buttons{gap:4px}.covenant-button{padding:4px 7px;font-size:11px}
+    .toolbar-bottom{gap:5px}.toolbar-bottom button{padding:5px 8px;font-size:11px}
+    .content{flex:1 1 auto;min-height:0;overflow:hidden;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:8px;align-items:stretch}
+    .list,.detail{min-height:0;height:100%;max-height:none;overflow:auto;overscroll-behavior:contain;padding:10px}
+    .detail{padding:12px}
+    .detail h2{font-size:18px}.detail h3{margin:13px 0 7px;font-size:13px}
+    footer{display:none}
+    .ban-section{padding:9px}.ban-section h3{margin:2px 0 7px}
+    .theme-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px}
+    .theme-choice{display:flex;align-items:center;gap:9px;text-align:left;padding:10px}
+    .theme-swatch{width:38px;height:38px;flex:0 0 38px;border-radius:8px;border:1px solid #ffffff55;display:block}
+    .theme-choice.active{outline:2px solid var(--accent);outline-offset:1px}
+    .resolution-chip{margin-left:auto;color:var(--muted);font-size:10px;white-space:nowrap}
+    .data-icon{width:42px;height:42px;object-fit:contain;vertical-align:middle;margin-right:10px;border-radius:6px}
+    .item{display:flex;align-items:center;gap:4px;padding:8px 10px}
+    .item strong{display:inline}
+    .operator-card{min-height:48px}
+    .wave-panel,.ban-panel{min-width:0}
+    @media(max-aspect-ratio: 0.88){
+      header{padding:6px 10px;min-height:38px}
+      header h1{font-size:15px}
+      header p{display:none}
+      main{padding:6px;gap:5px}
+      .stats{grid-template-columns:repeat(6,minmax(50px,1fr));overflow-x:auto}
+      .stat{padding:4px 6px}.stat b{font-size:13px}.stat span{font-size:9px}
+      .content{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) minmax(0,1fr);gap:5px}
+      .list,.detail{padding:8px}
+      .tabs button{padding:6px 9px}
+      .covenant-row-label{flex-basis:48px;font-size:10px}
+    }
+    @media(max-height:650px){
+      header{min-height:34px;padding:4px 10px}
+      header h1{font-size:15px}
+      main{padding:5px 8px;gap:4px}
+      .stats{gap:4px}.stat{padding:3px 6px}
+      .stat b{font-size:13px}.stat span{font-size:9px}
+      .tabs button{padding:4px 8px}
+      .toolbar{gap:3px}
+      #search{padding:5px 8px}
+      .covenant-button{padding:3px 5px}
+    }
+  `;
+  document.head.appendChild(layoutStyle);
+
+  // 读取设备显示分辨率，按物理屏幕方向/比例设置布局类别。
+  function applyScreenProfile() {
+    const dpr = window.devicePixelRatio || 1;
+    const sw = Math.round((window.screen && window.screen.width || window.innerWidth) * dpr);
+    const sh = Math.round((window.screen && window.screen.height || window.innerHeight) * dpr);
+    const ratio = sw / Math.max(sh, 1);
+    const profile = ratio > 1.12 ? "landscape" : ratio < 0.88 ? "portrait" : "square";
+    document.documentElement.dataset.screenProfile = profile;
+  }
+  applyScreenProfile();
+  window.addEventListener("resize", applyScreenProfile);
+  if (window.screen && window.screen.orientation) {
+    window.screen.orientation.addEventListener("change", applyScreenProfile);
+  }
+
+  // 主题方案：仅覆盖 CSS 变量，不改变数据或页面结构。
+  const THEMES = {
+    midnight:{name:"午夜黑",hue:220,accentHue:165,saturation:62},
+    orange:{name:"阳光橙",hue:28,accentHue:38,saturation:92},
+    blue:{name:"远峰蓝",hue:211,accentHue:205,saturation:65},
+    jade:{name:"青瓷绿",hue:155,accentHue:145,saturation:55},
+    sakura:{name:"樱花粉",hue:330,accentHue:340,saturation:48},
+    ivory:{name:"暖玉白",hue:35,accentHue:25,saturation:45},
+    violet:{name:"暮色紫",hue:260,accentHue:270,saturation:55},
+    crimson:{name:"赤焰",hue:355,accentHue:5,saturation:70},
+    ocean:{name:"深海青",hue:190,accentHue:185,saturation:65},
+    graphite:{name:"石墨灰",hue:215,accentHue:205,saturation:10},
+    lavender:{name:"薰衣草",hue:270,accentHue:285,saturation:50},
+    sunset:{name:"落日余晖",hue:18,accentHue:12,saturation:88},
+    sapphire:{name:"极夜蓝",hue:225,accentHue:235,saturation:72},
+    wine:{name:"葡萄酒红",hue:325,accentHue:335,saturation:48},
+    glacier:{name:"冰川蓝",hue:195,accentHue:190,saturation:45},
+    amber:{name:"琥珀金",hue:42,accentHue:38,saturation:85},
+    rose:{name:"玫瑰金",hue:12,accentHue:8,saturation:55},
+    royal:{name:"皇家紫",hue:275,accentHue:280,saturation:62},
+    sand:{name:"沙漠沙色",hue:34,accentHue:28,saturation:42},
+    magenta:{name:"霓虹洋红",hue:300,accentHue:295,saturation:85},
+    cobalt:{name:"钴蓝",hue:225,accentHue:215,saturation:82},
+    coral:{name:"珊瑚海",hue:8,accentHue:12,saturation:78},
+    peach:{name:"蜜桃奶霜",hue:24,accentHue:18,saturation:70},
+    mint:{name:"薄荷冰",hue:170,accentHue:165,saturation:45},
+    lemon:{name:"柠檬汽水",hue:55,accentHue:48,saturation:88},
+    cherry:{name:"樱桃可乐",hue:345,accentHue:350,saturation:72},
+    sky:{name:"晴空万里",hue:200,accentHue:205,saturation:58},
+    lavenderMist:{name:"紫雾晨曦",hue:285,accentHue:280,saturation:48},
+    copper:{name:"复古铜",hue:22,accentHue:28,saturation:52},
+    teal:{name:"孔雀蓝",hue:180,accentHue:175,saturation:72},
+    forest:{name:"松针森林",hue:140,accentHue:150,saturation:52},
+    plum:{name:"梅子紫",hue:290,accentHue:310,saturation:52},
+    steel:{name:"钛银灰",hue:210,accentHue:205,saturation:12},
+    berry:{name:"莓果酸奶",hue:320,accentHue:330,saturation:55},
+    lagoon:{name:"蓝绿泻湖",hue:185,accentHue:190,saturation:65},
+    tangerine:{name:"柑橘汽水",hue:35,accentHue:25,saturation:92},
+    iceRose:{name:"冰玫瑰",hue:345,accentHue:350,saturation:40},
+    champagne:{name:"香槟金",hue:40,accentHue:35,saturation:58},
+    indigo:{name:"靛青夜航",hue:245,accentHue:255,saturation:75},
+    neon:{name:"赛博电光",hue:185,accentHue:300,saturation:95}
+  };
+
+  function hsl(h,s,l) { return "hsl(" + ((h%360)+360)%360 + " " + s + "% " + l + "%)"; }
+  function buildThemePalette(t, scheme) {
+    const h=t.hue, a=t.accentHue, sat=t.saturation;
+    if (scheme === "light") return {
+      bg:hsl(h,Math.min(30,sat*.22),98), panel:hsl(h,Math.min(24,sat*.18),100),
+      panel2:hsl(h,Math.min(28,sat*.28),94), line:hsl(h,Math.min(25,sat*.25),80),
+      text:hsl(h,20,16), muted:hsl(h,12,43), accent:hsl(a,Math.max(42,sat*.75),40),
+      headerBg:hsl(h,Math.min(28,sat*.25),91), activeBg:hsl(a,Math.max(35,sat*.42),87),
+      activeText:hsl(a,50,18), tagBg:hsl(a,Math.max(25,sat*.3),94),
+      tagText:hsl(a,38,22), tagHoverBg:hsl(a,Math.max(35,sat*.45),82),
+      cardBg:hsl(h,Math.min(20,sat*.16),100), cardHoverBg:hsl(a,Math.max(22,sat*.25),91),
+      selectedBg:hsl(a,Math.max(35,sat*.42),86)
+    };
+    return {
+      bg:hsl(h,Math.min(35,sat*.35),9), panel:hsl(h,Math.min(34,sat*.38),14),
+      panel2:hsl(h,Math.min(38,sat*.42),20), line:hsl(h,Math.min(35,sat*.4),31),
+      text:hsl(h,18,94), muted:hsl(h,12,69), accent:hsl(a,Math.max(48,sat*.82),72),
+      headerBg:hsl(h,Math.min(38,sat*.4),6), activeBg:hsl(a,Math.max(35,sat*.5),25),
+      activeText:hsl(a,20,98), tagBg:hsl(h,Math.min(38,sat*.42),21),
+      tagText:hsl(h,18,94), tagHoverBg:hsl(a,Math.max(35,sat*.5),31),
+      cardBg:hsl(h,Math.min(34,sat*.38),17), cardHoverBg:hsl(a,Math.max(30,sat*.42),27),
+      selectedBg:hsl(a,Math.max(35,sat*.5),25)
+    };
+  }
+  const THEME_KEY = "stronghold_ui_theme";
+  const SCHEME_KEY = "stronghold_ui_color_scheme";
+  let activeTheme = "midnight";
+  let colorSchemeMode = "auto";
+  let systemDarkQuery = null;
+  try {
+    activeTheme = localStorage.getItem(THEME_KEY) || "midnight";
+    colorSchemeMode = localStorage.getItem(SCHEME_KEY) || "auto";
+  } catch (_) {}
+  function resolvedColorScheme() {
+    if (colorSchemeMode === "light" || colorSchemeMode === "dark") return colorSchemeMode;
+    return systemDarkQuery && systemDarkQuery.matches ? "dark" : "light";
+  }
+  function applyTheme(key) {
+    activeTheme = THEMES[key] ? key : "midnight";
+    const t = THEMES[activeTheme];
+    const scheme = resolvedColorScheme();
+    const palette = buildThemePalette(t, scheme);
+    const root = document.documentElement.style;
+    Object.entries(palette).forEach(([k,v]) => {
+      const cssName = k.replace(/[A-Z]/g, letter => "-" + letter.toLowerCase());
+      root.setProperty("--" + cssName, v);
+    });
+    document.documentElement.dataset.colorScheme = scheme;
+    document.body.dataset.theme = activeTheme;
+    try {
+      localStorage.setItem(THEME_KEY, activeTheme);
+      localStorage.setItem(SCHEME_KEY, colorSchemeMode);
+    } catch (_) {}
+    document.querySelectorAll("[data-theme-choice]").forEach(btn => btn.classList.toggle("active", btn.dataset.themeChoice === activeTheme));
+    document.querySelectorAll("[data-scheme-mode]").forEach(btn => btn.classList.toggle("active", btn.dataset.schemeMode === colorSchemeMode));
+  }
+  try {
+    if (window.matchMedia) {
+      systemDarkQuery = window.matchMedia("(prefers-color-scheme: dark)");
+      if (systemDarkQuery.addEventListener) systemDarkQuery.addEventListener("change", () => {
+        if (colorSchemeMode === "auto") applyTheme(activeTheme);
+      });
+      else if (systemDarkQuery.addListener) systemDarkQuery.addListener(() => {
+        if (colorSchemeMode === "auto") applyTheme(activeTheme);
+      });
+    }
+  } catch (_) {}
+  applyTheme(activeTheme);
+
+  // 增加缺失的导航入口；原页面事件代理可直接处理这些按钮。
+  const nav = $("#tabs");
+  const extraTabs = [
+    ["ban","Ban干员"],
+    ["waves","敌人"],
+    ["theme","主题色"]
+  ];
+  extraTabs.forEach(([id,label]) => {
+    if (!nav.querySelector('[data-tab="' + id + '"]')) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.dataset.tab = id;
+      button.textContent = label;
+      nav.appendChild(button);
+    }
+  });
+
+  // Navigation order: operators, favorites, ban, then the reference-data pages.
+  const tabLabels = {
+    operators:"干员", favorites:"收藏干员", ban:"Ban干员",
+    covenants:"盟约", equipment:"装备", strategies:"策略",
+    bosses:"首领", maps:"地图", waves:"敌人", theme:"主题色"
+  };
+  Object.entries(tabLabels).forEach(([id,label]) => {
+    const button = nav.querySelector('[data-tab="' + id + '"]');
+    if (button) button.textContent = label;
+  });
+  const tabOrder = ["operators","favorites","ban","covenants","equipment","strategies","bosses","maps","waves","theme"];
+  tabOrder.forEach(id => {
+    const button = nav.querySelector('[data-tab="' + id + '"]');
+    if (button) nav.appendChild(button);
+  });
+
+  function renderThemePage() {
+    const schemeButtons = [
+      ["auto","跟随设备昼夜模式"],["light","始终浅色"],["dark","始终深色"]
+    ].map(([mode,label]) => '<button type="button" data-scheme-mode="' + mode + '" class="' + (colorSchemeMode === mode ? "active" : "") + '">' + label + '</button>').join("");
+    $("#list").innerHTML = '<div class="ban-section"><h2>主题色设置</h2><p class="wave-note">共 40 套配色，每套均有明暗两种版本；默认跟随 Android、iOS、Windows、macOS 等设备的系统外观。</p><div class="scheme-mode-row">' + schemeButtons + '</div><div class="theme-grid">' +
+      Object.entries(THEMES).map(([key,t]) => {
+        const light=buildThemePalette(t,"light"), dark=buildThemePalette(t,"dark");
+        return '<button type="button" class="theme-choice ' + (activeTheme === key ? "active" : "") + '" data-theme-choice="' + key + '"><span class="theme-swatch" style="background:linear-gradient(90deg,' + light.bg + ' 0 50%, ' + dark.bg + ' 50% 100%);border:1px solid var(--line)"></span><span><strong>' + t.name + '</strong><small class="wave-note">浅色 / 深色</small></span></button>';
+      }).join("") +
+      '</div></div>';
+    $("#detail").innerHTML = '<h2>界面显示</h2><p>当前主题：' + THEMES[activeTheme].name + '</p><p>当前模式：' + (colorSchemeMode === "auto" ? "跟随设备（" + resolvedColorScheme() + "色）" : colorSchemeMode === "light" ? "始终浅色" : "始终深色") + '</p><p class="wave-note">自动模式通过系统 prefers-color-scheme 设置判断；也可以手动锁定浅色或深色。</p>';
+  }
+
+  // 覆盖切换逻辑，保证所有新增页面都能进入且工具栏状态正确。
+  const previousSwitchTab = switchTab;
+  switchTab = function(tab) {
+    if (!["ban","waves","theme"].includes(tab)) return previousSwitchTab(tab);
+    currentTab = tab;
+    selectedName = null;
+    $("#search").value = "";
+    updateTabButtons();
+    updateToolbar();
+    $("#search").style.display = "none";
+    $("#covenantToolbar").style.display = "none";
+    $("#filter").style.display = "none";
+    renderList();
+  };
+
+  const previousRenderList = renderList;
+  renderList = function() {
+    if (currentTab === "theme") { renderThemePage(); return; }
+    return previousRenderList();
+  };
+
+  // 对旧 updateToolbar 的隐藏状态作统一修正，离开特殊页时恢复搜索与盟约栏。
+  const previousUpdateToolbar = updateToolbar;
+  updateToolbar = function() {
+    previousUpdateToolbar();
+    const special = ["ban","waves","theme"].includes(currentTab);
+    $("#search").style.display = special ? "none" : "";
+    $("#covenantToolbar").style.display = currentTab === "operators" ? "" : "none";
+  };
+
+  // Ban 列表：每个已 Ban 干员都可单独移除，盟约按钮再次点击则批量取消。
+  const previousRenderBanPage = renderBanPage;
+  renderBanPage = function() {
+    const covenants = DATABASE.covenants && DATABASE.covenants.covenants || [];
+    const ops = validOps();
+    const bannedOps = ops.filter(op => banned.has(op.name));
+    $("#list").innerHTML = '<div class="ban-panel">' +
+      '<div class="ban-section"><h3>按盟约批量 Ban / 取消</h3><p class="wave-note">按钮显示已 Ban 人数 / 盟约覆盖人数。再次点击同一盟约可整组取消；部分成员已 Ban 时再次点击会补齐整组。</p><div class="ban-grid">' +
+      covenants.map(c => {
+        const members = covenantOps(c.name);
+        const count = members.filter(op => banned.has(op.name)).length;
+        return '<button type="button" class="ban-covenant ' + (count ? "banned" : "") + '" data-ban-covenant="' + esc(c.name) + '"><img class="bond-icon" src="' + bondImg(c.name) + '" alt="">' + esc(c.name) + ' <small>' + count + '/' + members.length + '</small></button>';
+      }).join("") +
+      '</div></div><div class="ban-section"><h3>单独添加 / 取消干员 Ban</h3><input id="banSearch" placeholder="搜索干员名称……" style="width:100%;padding:8px;margin:5px 0 9px;background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:6px"><div class="ban-grid" id="banOperatorGrid">' +
+      ops.map(op => '<button type="button" class="ban-op ' + (banned.has(op.name) ? "banned" : "") + '" data-ban-operator="' + esc(op.name) + '"><img src="' + opImg(op.name) + '" alt="" loading="lazy">' + esc(op.name) + (banned.has(op.name) ? " ✓" : "") + '</button>').join("") +
+      '</div></div></div>';
+    $("#detail").innerHTML = '<h2>当前 Ban 名单（' + bannedOps.length + '）</h2><button type="button" id="clearBansButton">清空全部 Ban</button>' +
+      (bannedOps.length ? '<div class="ban-grid" style="margin-top:12px">' + bannedOps.map(op => '<button type="button" class="ban-op banned" data-ban-operator="' + esc(op.name) + '"><img src="' + opImg(op.name) + '" alt="">' + esc(op.name) + '　取消 ×</button>').join("") + '</div>' : '<p class="empty-message">当前没有 Ban 干员</p>');
+  };
+
+  // 盟约、装备、策略和首领列表统一补上原始资源图标。
+  const previousRenderDetail = renderDetail;
+  function getDataIcon(item, tab) {
+    if (!item) return "";
+    if (tab === "equipment") return ASSET + "data/equipment/" + encodeURIComponent(item.name) + ".webp";
+    if (tab === "strategies") return ASSET + "data/strategies/" + encodeURIComponent(item.id) + ".webp";
+    if (tab === "covenants") return bondImg(item.name);
+    return "";
+  }
+  renderDetail = function(item) {
+    // Use the original detail renderer as the base. Operator details get exactly one WEBP portrait.
+    let html = oldRenderDetail(item);
+    if (!item) return html;
+    if (item.coreCovenants) {
+      html = '<img class="detail-avatar" src="' + opImg(item.name) + '" alt="">' +
+        '<div class="ban-state">' +
+        (banned.has(item.name) ? '<b style="color:#ff8994">⛔ 已加入 Ban 名单</b>' : '<span style="color:var(--muted)">当前未 Ban</span>') +
+        '<button type="button" id="toggleDetailBan" style="display:block;margin:9px 0">' + (banned.has(item.name) ? "取消 Ban" : "Ban 此干员") + '</button></div>' + html;
+    } else if (item.enemyId) {
+      html = '<img class="detail-avatar" src="' + bossImg(item.enemyId) + '" alt="">' + html;
+    } else {
+      const icon = getDataIcon(item, currentTab);
+      if (icon) html = '<img class="detail-avatar" src="' + icon + '" alt="">' + html;
+      else if (item.bondType) html = '<img class="detail-avatar" src="' + bondImg(item.name) + '" alt="">' + html;
+    }
+
+    // Add WEBP portraits to the "covered operators" buttons inside covenant details.
+    if (currentTab === "covenants" && item.bondType) {
+      html = html.replace(
+        /(<button\b(?=[^>]*class="operator-link-card")(?=[^>]*data-open-operator="([^"]+)")[^>]*>)/g,
+        (tag, _unused, name) => tag + '<img class="operator-link-avatar" src="' + opImg(name) + '" alt="" loading="lazy">'
+      );
+    }
+    return html;
+  };
+  const previousRenderListWithIcons = renderList;
+  function renderDataListWithIcons() {
+    const records = getRecords(currentTab);
+    const keyword = $("#search").value.trim().toLowerCase();
+    const filtered = records.map((item,index) => ({item,index}))
+      .filter(x => !keyword || getSearchText(x.item).includes(keyword));
+    $("#list").innerHTML = filtered.map(x => {
+      const item = x.item;
+      const icon = getDataIcon(item, currentTab);
+      return '<div class="item ' + (selectedName === getName(item) ? "selected" : "") + '" data-index="' + x.index + '">' +
+        (icon ? '<img class="data-icon" src="' + icon + '" alt="" loading="lazy">' : '') +
+        '<span><strong>' + esc(getName(item)) + '</strong><small>' + esc(item.initiator || item.bondType || item.description || "") + '</small></span></div>';
+    }).join("") || '<div class="empty-message">没有找到匹配资料</div>';
+    const selected = records.find(item => getName(item) === selectedName);
+    $("#detail").innerHTML = renderDetail(selected);
+  }
+  renderList = function() {
+    if (currentTab === "theme") { renderThemePage(); return; }
+    if (currentTab === "waves") { renderWavePage(); return; }
+    if (currentTab === "ban") { renderBanPage(); return; }
+    if (["equipment","strategies","covenants"].includes(currentTab)) { renderDataListWithIcons(); return; }
+    return previousRenderListWithIcons();
+  };
+  // 新增按钮、主题切换、Ban 搜索和取消操作。
+  $("#list").addEventListener("click", function(event) {
+    const mode = event.target.closest("[data-scheme-mode]");
+    if (mode) { colorSchemeMode = mode.dataset.schemeMode; applyTheme(activeTheme); renderThemePage(); return; }
+    const theme = event.target.closest("[data-theme-choice]");
+    if (theme) { activeTheme = theme.dataset.themeChoice; applyTheme(activeTheme); renderThemePage(); return; }
+  });
+
+  $("#list").addEventListener("input", function(event) {
+    if (event.target.id !== "banSearch") return;
+    const q = event.target.value.trim().toLowerCase();
+    $("#banOperatorGrid").querySelectorAll("[data-ban-operator]").forEach(btn => {
+      btn.style.display = btn.dataset.banOperator.toLowerCase().includes(q) ? "" : "none";
+    });
+  });
+
+  $("#detail").addEventListener("click", function(event) {
+    const op = event.target.closest("[data-ban-operator]");
+    if (op) {
+      toggleBan(op.dataset.banOperator);
+      renderBanPage();
+    }
+  });
+
+
+  // ===== 本次界面修订：主题、导航顺序、顶部精简、图标与间距 =====
+  const refinementStyle = document.createElement("style");
+  refinementStyle.textContent = `
+    header{background:var(--header-bg)!important;padding:10px 16px!important;min-height:42px!important;border-bottom:1px solid var(--line)}
+    html[data-screen-profile="portrait"] .content,html[data-screen-profile="square"] .content{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) minmax(0,1fr)}
+    html[data-screen-profile="landscape"] .content{grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);grid-template-rows:minmax(0,1fr)}
+    header h1{font-size:19px!important;margin:0!important;line-height:1.2}
+    header p,#resolutionChip,#status,#stats{display:none!important}
+    body{display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden}
+    #tabs{order:0;flex:0 0 auto;margin:0!important;padding:6px 12px!important;background:var(--header-bg);border-bottom:1px solid var(--line);gap:6px!important;flex-wrap:nowrap!important;overflow-x:auto;overflow-y:hidden}
+    #tabs button{flex:0 0 auto;padding:7px 12px!important;border-radius:6px!important;white-space:nowrap}
+    #tabs button.active{background:var(--active-bg)!important;border-color:var(--accent)!important;color:var(--text)!important;box-shadow:inset 0 -2px 0 var(--accent)}
+    #tabs button:hover{background:var(--panel2);border-color:var(--accent)}
+    main{padding-top:8px!important;gap:6px!important;min-height:0;flex:1 1 auto}
+    .covenant-row{align-items:flex-start;margin-bottom:5px;row-gap:6px}
+    .covenant-row-label{padding-top:7px!important}
+    .covenant-buttons{row-gap:7px!important;column-gap:6px!important}
+    .covenant-button{line-height:1.4;transition:background .15s,border-color .15s,transform .15s,box-shadow .15s}
+    .covenant-button:hover{background:var(--active-bg)!important;border-color:var(--accent)!important;color:var(--text)!important;transform:translateY(-1px);box-shadow:0 2px 8px #0003}
+    .covenant-button.active{background:var(--active-bg)!important;border-color:var(--accent)!important}
+    .operator-link-card{display:flex;align-items:center;justify-content:flex-start;gap:7px;text-align:left;padding:6px 8px!important;min-height:48px}
+    .operator-link-avatar{width:34px;height:34px;object-fit:cover;flex:0 0 34px;border-radius:5px;background:var(--bg)}
+    .operator-link-card small{margin-left:auto}
+    .data-icon{width:44px;height:44px;object-fit:contain;flex:0 0 44px;background:var(--panel2);padding:3px}
+    .item{min-height:56px;line-height:1.45}
+    .item span{min-width:0;display:flex;flex-direction:column;gap:3px}
+    .item small{line-height:1.35}
+    .detail-avatar{width:78px;height:78px}
+    .theme-grid{grid-template-columns:repeat(auto-fill,minmax(165px,1fr))}
+    .theme-choice{border-color:var(--line);background:var(--panel2)}
+    .theme-choice:hover{border-color:var(--accent);background:var(--active-bg)}
+    .theme-choice.active{background:var(--active-bg);border-color:var(--accent);color:var(--text)}
+    @media(max-aspect-ratio:0.88){
+      header{padding:8px 11px!important;min-height:36px!important}
+      header h1{font-size:16px!important}
+      #tabs{padding:5px 7px!important}
+      #tabs button{padding:6px 9px!important;font-size:11px}
+    }
+  `;
+  document.head.appendChild(refinementStyle);
+
+  // Header contains only the title. Navigation follows it immediately.
+  const titleHeader = document.querySelector("header");
+  if (titleHeader) {
+    titleHeader.querySelectorAll("p,#resolutionChip").forEach(node => node.remove());
+    const heading = titleHeader.querySelector("h1");
+    Array.from(titleHeader.children).forEach(node => { if (node !== heading) node.remove(); });
+  }
+  const appMain = document.querySelector("main");
+  if (nav && appMain && nav.parentElement !== document.body) {
+    document.body.insertBefore(nav, appMain);
+  }
+
+  // Remove old screen-resolution display; detection remains active for layout profile.
+  const resolutionChip = document.getElementById("resolutionChip");
+  if (resolutionChip) resolutionChip.remove();
+
+  // Refresh theme variables now that header and selected-tab variables are styled.
+  applyTheme(activeTheme);
+
+  // Ensure renamed pages are routed to their intended renderers.
+  const finalSwitchTab = switchTab;
+  switchTab = function(tab) {
+    if (tab === "ban" || tab === "waves" || tab === "theme") {
+      currentTab = tab;
+      selectedName = null;
+      $("#search").value = "";
+      updateTabButtons();
+      updateToolbar();
+      $("#search").style.display = "none";
+      $("#covenantToolbar").style.display = "none";
+      $("#filter").style.display = "none";
+      renderList();
+      return;
+    }
+    finalSwitchTab(tab);
+  };
+
+  // Final navigation and theme initialization.
+  const tabState = currentTab;
+  if (tabState === "operators") {
+    renderStats();
+    renderCovenantButtons();
+  }
+
+
+  const semanticThemeStyle = document.createElement("style");
+  semanticThemeStyle.textContent = `
+    /* 全部导航标签统一使用当前主题，选中标签使用独立高对比文字色 */
+    #tabs button{background:var(--panel2)!important;color:var(--text)!important;border-color:var(--line)!important}
+    #tabs button.active,#tabs button.active:hover{background:var(--active-bg)!important;color:var(--active-text)!important;border-color:var(--accent)!important}
+    #tabs button:hover{background:var(--tag-hover-bg)!important;color:var(--active-text)!important;border-color:var(--accent)!important}
+    /* 盟约筛选按钮及详情中的盟约标签 */
+    .covenant-button{background:var(--tag-bg)!important;color:var(--tag-text)!important;border-color:var(--line)!important}
+    .covenant-button.active,.covenant-button:hover{background:var(--tag-hover-bg)!important;color:var(--active-text)!important;border-color:var(--accent)!important}
+    .pill{background:var(--tag-bg)!important;color:var(--tag-text)!important;border-color:var(--line)!important}
+    .pill:hover{background:var(--tag-hover-bg)!important;color:var(--active-text)!important;border-color:var(--accent)!important}
+    .scheme-mode-row{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 14px}
+    .scheme-mode-row button{background:var(--tag-bg)!important;color:var(--tag-text)!important;border-color:var(--line)!important}
+    .scheme-mode-row button.active{background:var(--active-bg)!important;color:var(--active-text)!important;border-color:var(--accent)!important}
+
+    /* 干员、收藏、Ban 干员及 Ban 盟约：高优先级统一跟随当前主题 */
+    html body main #list .operator-grid > .operator-card,
+    html body main #list .operator-link-card,
+    html body main #detail .operator-link-card,
+    html body main #list .ban-panel .ban-grid > .ban-op,
+    html body main #list .ban-panel .ban-grid > .ban-covenant,
+    html body main #detail .ban-grid > .ban-op{
+      background:var(--card-bg,var(--panel2))!important;
+      color:var(--text)!important;
+      border-color:var(--line)!important;
+    }
+    html body main #list .operator-grid > .operator-card:hover,
+    html body main #list .operator-link-card:hover,
+    html body main #detail .operator-link-card:hover,
+    html body main #list .ban-panel .ban-grid > .ban-op:hover,
+    html body main #list .ban-panel .ban-grid > .ban-covenant:hover,
+    html body main #detail .ban-grid > .ban-op:hover{
+      background:var(--card-hover-bg,var(--active-bg))!important;
+      color:var(--text)!important;
+      border-color:var(--accent)!important;
+    }
+    html body main #list .operator-grid > .operator-card.selected,
+    html body main #list .operator-link-card.selected,
+    html body main #detail .operator-link-card.selected{
+      background:var(--selected-bg,var(--active-bg))!important;
+      color:var(--active-text)!important;
+      border-color:var(--accent)!important;
+    }
+    html body main #list .ban-panel .ban-grid > .ban-op.banned,
+    html body main #list .ban-panel .ban-grid > .ban-covenant.banned,
+    html body main #detail .ban-grid > .ban-op.banned{
+      background:var(--selected-bg,var(--active-bg))!important;
+      color:var(--active-text)!important;
+      border-color:var(--accent)!important;
+    }
+    html body main #list .ban-panel .ban-grid > .ban-covenant,
+    html body main #list .ban-panel .ban-grid > .ban-op{
+      min-height:42px;
+    }
+    .operator-name,.operator-link-card,.ban-op,.ban-covenant{color:var(--text)!important}
+    .operator-card .operator-name,.operator-link-card strong,.ban-op span,.ban-covenant span{color:inherit!important}
+    .ban-mark{background:var(--active-bg)!important;color:var(--active-text)!important}
+    /* 盟约/干员图标周围不再残留旧色底 */
+    .bond-icon,.operator-avatar,.operator-link-avatar{background:var(--panel)!important}
+    .theme-choice{background:var(--card-bg)!important;color:var(--text)!important;border-color:var(--line)!important}
+    .theme-choice:hover,.theme-choice.active{background:var(--active-bg)!important;color:var(--active-text)!important;border-color:var(--accent)!important}
+  `;
+  document.head.appendChild(semanticThemeStyle);
+  applyTheme(activeTheme);
+
+})();
+/* ===== 原 enhancements.js 内嵌结束 ===== */
+</script>
 </body>
 </html>
