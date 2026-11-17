@@ -414,8 +414,6 @@
     const button = nav.querySelector('[data-tab="' + id + '"]');
     if (button) nav.appendChild(button);
   });
-  const obsoleteTypesTab = nav.querySelector('[data-tab="enemyTypes"]');
-  if (obsoleteTypesTab) obsoleteTypesTab.remove();
 
   function renderThemePage() {
     $("#list").innerHTML = '<div class="ban-section"><h2>主题色设置</h2><p class="wave-note">选择一套配色，设置会保存在当前浏览器中。</p><div class="theme-grid">' +
@@ -504,7 +502,7 @@
     // Add WEBP portraits to the "covered operators" buttons inside covenant details.
     if (currentTab === "covenants" && item.bondType) {
       html = html.replace(
-        /(<button\\b(?=[^>]*class="operator-link-card")(?=[^>]*data-open-operator="([^"]+)")[^>]*>)/g,
+        /(<button\b(?=[^>]*class="operator-link-card")(?=[^>]*data-open-operator="([^"]+)")[^>]*>)/g,
         (tag, _unused, name) => tag + '<img class="operator-link-avatar" src="' + opImg(name) + '" alt="" loading="lazy">'
       );
     }
