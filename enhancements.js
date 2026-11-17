@@ -3,7 +3,7 @@
 (function () {
   const ASSET = "https://raw.githubusercontent.com/LBEILC/StrongholdAssistant/main/src/ui/public/assets/";
   const styleNode = document.createElement("style");
-  styleNode.textContent = "\n.operator-card{gap:6px;justify-content:flex-start;padding:5px 8px}\n.operator-avatar{width:34px;height:34px;object-fit:cover;border-radius:6px;flex:0 0 34px;background:#141a21}\n.operator-card.banned{opacity:.58;filter:grayscale(1);border-style:dashed}\n.ban-mark{position:absolute;left:5px;top:4px;background:#7b3038;color:#fff;border-radius:4px;padding:1px 4px;font-size:10px;z-index:1}\n.covenant-button{display:inline-flex;align-items:center;gap:5px}\n.bond-icon{width:20px;height:20px;object-fit:contain;vertical-align:middle}\n.detail-avatar{width:88px;height:88px;object-fit:cover;border-radius:10px;float:right;margin:0 0 12px 14px;background:#141a21}\n.ban-panel{display:flex;flex-direction:column;gap:12px}\n.ban-section,.enemy-card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px}\n.ban-grid,.wave-type-row,.wave-rounds{display:flex;flex-wrap:wrap;gap:7px}\n.ban-op{display:inline-flex;align-items:center;gap:6px;padding:5px 8px}\n.ban-op img{width:26px;height:26px;object-fit:cover;border-radius:5px}\n.ban-op.banned,.ban-covenant.banned{border-color:#d65b67;background:#48272e}\n.wave-type{display:inline-flex;align-items:center;gap:6px}\n.wave-type img{width:23px;height:23px;object-fit:contain}\n.wave-type.active{background:#285044;border-color:var(--accent)}\n.wave-round-button{min-width:42px}\n.enemy-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:8px}\n.enemy-card{display:flex;align-items:center;gap:9px;min-width:0}\n.enemy-card img{width:54px;height:54px;object-fit:contain;flex:0 0 54px;background:#141a21;border-radius:6px}\n.enemy-card.highlighted{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}\n.enemy-card.dimmed{opacity:.35}\n.enemy-card small,.wave-note{display:block;color:var(--muted);margin-top:4px;font-size:12px}\n";
+  styleNode.textContent = "\n.operator-card{gap:6px;justify-content:flex-start;padding:5px 8px}\n.operator-avatar{width:34px;height:34px;object-fit:cover;border-radius:6px;flex:0 0 34px;background:#141a21}\n.operator-card.banned{opacity:.58;filter:grayscale(1);border-style:dashed}\n.ban-mark{position:absolute;left:5px;top:4px;background:#7b3038;color:#fff;border-radius:4px;padding:1px 4px;font-size:10px;z-index:1}\n.covenant-button{display:inline-flex;align-items:center;gap:5px}\n.bond-icon{width:20px;height:20px;object-fit:contain;vertical-align:middle}\n.detail-avatar{width:88px;height:88px;object-fit:cover;border-radius:10px;float:right;margin:0 0 12px 14px;background:#141a21}\n.ban-panel{display:flex;flex-direction:column;gap:12px}\n.ban-section,.enemy-card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px}\n.ban-grid,.wave-type-row,.wave-rounds{display:flex;flex-wrap:wrap;gap:7px}\n.ban-op{display:inline-flex;align-items:center;gap:6px;padding:5px 8px}\n.ban-op img{width:26px;height:26px;object-fit:cover;border-radius:5px}\n/* Ban 卡片选中态由末尾主题规则统一控制 */\n.wave-type{display:inline-flex;align-items:center;gap:6px}\n.wave-type img{width:23px;height:23px;object-fit:contain}\n.wave-type.active{background:#285044;border-color:var(--accent)}\n.wave-round-button{min-width:42px}\n.enemy-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:8px}\n.enemy-card{display:flex;align-items:center;gap:9px;min-width:0}\n.enemy-card img{width:54px;height:54px;object-fit:contain;flex:0 0 54px;background:#141a21;border-radius:6px}\n.enemy-card.highlighted{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}\n.enemy-card.dimmed{opacity:.35}\n.enemy-card small,.wave-note{display:block;color:var(--muted);margin-top:4px;font-size:12px}\n";
   document.head.appendChild(styleNode);
   const BOND = {
     "乌萨斯":"ursus","伊比利亚":"iberia","卡西米尔":"kazimierz","叙拉古":"siracusa","炎":"yan","维多利亚":"victoria","莱塔尼亚":"lethania","萨尔贡":"sargon","谢拉格":"kjerag","阿戈尔":"egir","不屈":"indom","助力":"deput","协防干员":"empty","坚守":"stead","奇迹":"mira","奥术":"arcane","投资人":"invest","灵巧":"skillful","独行":"solo","突袭":"raid","精准":"preci","绝技":"sunt","聚合":"doc","调和":"mani","迅捷":"swift","远见":"visi"
@@ -727,29 +727,49 @@
     .covenant-button.active,.covenant-button:hover{background:var(--tag-hover-bg)!important;color:var(--active-text)!important;border-color:var(--accent)!important}
     .pill{background:var(--tag-bg)!important;color:var(--tag-text)!important;border-color:var(--line)!important}
     .pill:hover{background:var(--tag-hover-bg)!important;color:var(--active-text)!important;border-color:var(--accent)!important}
-    /* 干员/收藏页：覆盖原始 HTML 中写死的 #202833 与 #303c49 */
-    .operator-card,.operator-link-card,#list .operator-card,#list .operator-link-card{
-      background:var(--card-bg)!important;color:var(--text)!important;border-color:var(--line)!important
-    }
-    .operator-card:hover,.operator-link-card:hover,#list .operator-card:hover,#list .operator-link-card:hover{
-      background:var(--card-hover-bg)!important;color:var(--text)!important;border-color:var(--accent)!important
-    }
-    .operator-card.selected,.operator-link-card.selected{
-      background:var(--selected-bg)!important;color:var(--active-text)!important;border-color:var(--accent)!important
-    }
-    /* Ban 页：覆盖原来固定的暗红色 #48272e */
-    .ban-op,.ban-covenant{background:var(--card-bg)!important;color:var(--text)!important;border-color:var(--line)!important}
-    .ban-op:hover,.ban-covenant:hover{background:var(--card-hover-bg)!important;color:var(--text)!important;border-color:var(--accent)!important}
-    .ban-op.banned,.ban-covenant.banned{background:var(--selected-bg)!important;color:var(--active-text)!important;border-color:var(--accent)!important}
-    .ban-op img{background:var(--panel)!important}
     .scheme-mode-row{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 14px}
     .scheme-mode-row button{background:var(--tag-bg)!important;color:var(--tag-text)!important;border-color:var(--line)!important}
     .scheme-mode-row button.active{background:var(--active-bg)!important;color:var(--active-text)!important;border-color:var(--accent)!important}
 
-    .operator-card,.operator-link-card,.ban-op,.ban-covenant{background:var(--card-bg)!important;color:var(--text)!important;border-color:var(--line)}
-    .operator-card:hover,.operator-link-card:hover,.ban-op:hover,.ban-covenant:hover{background:var(--card-hover-bg)!important;color:var(--text)!important;border-color:var(--accent)}
-    .operator-card.selected,.operator-link-card.selected{background:var(--selected-bg)!important;color:var(--active-text)!important;border-color:var(--accent)!important}
-    .ban-op.banned,.ban-covenant.banned{background:var(--active-bg)!important;color:var(--active-text)!important;border-color:var(--accent)!important}
+    /* 干员、收藏、Ban 干员及 Ban 盟约：高优先级统一跟随当前主题 */
+    html body main #list .operator-grid > .operator-card,
+    html body main #list .operator-link-card,
+    html body main #detail .operator-link-card,
+    html body main #list .ban-panel .ban-grid > .ban-op,
+    html body main #list .ban-panel .ban-grid > .ban-covenant,
+    html body main #detail .ban-grid > .ban-op{
+      background:var(--card-bg,var(--panel2))!important;
+      color:var(--text)!important;
+      border-color:var(--line)!important;
+    }
+    html body main #list .operator-grid > .operator-card:hover,
+    html body main #list .operator-link-card:hover,
+    html body main #detail .operator-link-card:hover,
+    html body main #list .ban-panel .ban-grid > .ban-op:hover,
+    html body main #list .ban-panel .ban-grid > .ban-covenant:hover,
+    html body main #detail .ban-grid > .ban-op:hover{
+      background:var(--card-hover-bg,var(--active-bg))!important;
+      color:var(--text)!important;
+      border-color:var(--accent)!important;
+    }
+    html body main #list .operator-grid > .operator-card.selected,
+    html body main #list .operator-link-card.selected,
+    html body main #detail .operator-link-card.selected{
+      background:var(--selected-bg,var(--active-bg))!important;
+      color:var(--active-text)!important;
+      border-color:var(--accent)!important;
+    }
+    html body main #list .ban-panel .ban-grid > .ban-op.banned,
+    html body main #list .ban-panel .ban-grid > .ban-covenant.banned,
+    html body main #detail .ban-grid > .ban-op.banned{
+      background:var(--selected-bg,var(--active-bg))!important;
+      color:var(--active-text)!important;
+      border-color:var(--accent)!important;
+    }
+    html body main #list .ban-panel .ban-grid > .ban-covenant,
+    html body main #list .ban-panel .ban-grid > .ban-op{
+      min-height:42px;
+    }
     .operator-name,.operator-link-card,.ban-op,.ban-covenant{color:var(--text)!important}
     .operator-card .operator-name,.operator-link-card strong,.ban-op span,.ban-covenant span{color:inherit!important}
     .ban-mark{background:var(--active-bg)!important;color:var(--active-text)!important}
