@@ -340,43 +340,115 @@
 
   // 主题方案：仅覆盖 CSS 变量，不改变数据或页面结构。
   const THEMES = {
-    midnight:{name:"午夜黑",bg:"#101319",panel:"#191f29",panel2:"#252e3b",line:"#394656",text:"#e9eef5",muted:"#9aa9ba",accent:"#7bceb7",headerBg:"#090c11",activeBg:"#244a40",activeText:"#f1fff9",tagBg:"#202c32",tagText:"#dcece5",tagHoverBg:"#285044",cardBg:"#202833",cardHoverBg:"#303c49",selectedBg:"#30483f"},
-    orange:{name:"阳光橙",bg:"#21170f",panel:"#302116",panel2:"#49301e",line:"#705039",text:"#fff0dc",muted:"#c5a98d",accent:"#ffad55",headerBg:"#160e09",activeBg:"#714018",activeText:"#fff8ed",tagBg:"#49301e",tagText:"#fff0dc",tagHoverBg:"#714018",cardBg:"#39281d",cardHoverBg:"#59402b",selectedBg:"#62401f"},
-    blue:{name:"远峰蓝",bg:"#101b2a",panel:"#192a3e",panel2:"#233b55",line:"#385875",text:"#e5f1ff",muted:"#9eb5cc",accent:"#78b9f2",headerBg:"#0a1320",activeBg:"#244c70",activeText:"#f0f8ff",tagBg:"#203a50",tagText:"#e5f1ff",tagHoverBg:"#315d80",cardBg:"#1d3045",cardHoverBg:"#2a4662",selectedBg:"#244c70"},
-    jade:{name:"青瓷绿",bg:"#111d1b",panel:"#1b2c28",panel2:"#294039",line:"#45675d",text:"#e5f4ed",muted:"#a1bdb1",accent:"#8bd3b1",headerBg:"#091411",activeBg:"#285a48",activeText:"#f0fff7",tagBg:"#233b33",tagText:"#e5f4ed",tagHoverBg:"#356b54",cardBg:"#20352e",cardHoverBg:"#315344",selectedBg:"#285a48"},
-    sakura:{name:"樱花粉",bg:"#211820",panel:"#30232f",panel2:"#493244",line:"#6c4a62",text:"#fff0f7",muted:"#c9aabb",accent:"#f0a6c8",headerBg:"#160f16",activeBg:"#70415d",activeText:"#fff5fa",tagBg:"#493244",tagText:"#fff0f7",tagHoverBg:"#70415d",cardBg:"#3b2b3b",cardHoverBg:"#59405a",selectedBg:"#70415d"},
-    ivory:{name:"暖玉白",bg:"#e9e3d8",panel:"#f7f2e9",panel2:"#e6ded0",line:"#c9bda9",text:"#302b25",muted:"#766d62",accent:"#b87943",headerBg:"#d9d0c1",activeBg:"#e6c5a3",activeText:"#302319",tagBg:"#e3d8c8",tagText:"#393027",tagHoverBg:"#d5b48e",cardBg:"#f1eadd",cardHoverBg:"#e6d6c2",selectedBg:"#e6c5a3"},
-    violet:{name:"暮色紫",bg:"#171426",panel:"#242039",panel2:"#353052",line:"#514a75",text:"#f0edff",muted:"#b2accd",accent:"#b8a0ff",headerBg:"#0e0b1b",activeBg:"#51417d",activeText:"#faf7ff",tagBg:"#353052",tagText:"#f0edff",tagHoverBg:"#51417d",cardBg:"#2b2744",cardHoverBg:"#40395f",selectedBg:"#51417d"},
-    crimson:{name:"赤焰",bg:"#211315",panel:"#321d22",panel2:"#4a292f",line:"#754149",text:"#ffedf0",muted:"#c9a4aa",accent:"#f07883",headerBg:"#160b0e",activeBg:"#74313b",activeText:"#fff5f5",tagBg:"#48272e",tagText:"#ffedf0",tagHoverBg:"#74313b",cardBg:"#3b242a",cardHoverBg:"#5c3039",selectedBg:"#74313b"},
-    ocean:{name:"深海青",bg:"#0d1b22",panel:"#142b35",panel2:"#1e3d49",line:"#355d69",text:"#e2f7fb",muted:"#9bbbc3",accent:"#62c9df",headerBg:"#071218",activeBg:"#1b5868",activeText:"#f0fdff",tagBg:"#1e3d49",tagText:"#e2f7fb",tagHoverBg:"#1b5868",cardBg:"#193440",cardHoverBg:"#245263",selectedBg:"#1b5868"},
-    graphite:{name:"石墨灰",bg:"#191b1e",panel:"#25292e",panel2:"#343a42",line:"#4d565f",text:"#f0f2f4",muted:"#aab2ba",accent:"#c0c8d0",headerBg:"#101215",activeBg:"#48545f",activeText:"#ffffff",tagBg:"#343a42",tagText:"#f0f2f4",tagHoverBg:"#48545f",cardBg:"#2b3036",cardHoverBg:"#414950",selectedBg:"#48545f"},
-    lavender:{name:"薰衣草",bg:"#1c1a27",panel:"#292638",panel2:"#3d3951",line:"#5d5677",text:"#f4f0ff",muted:"#b8b0ce",accent:"#c5a9ff",headerBg:"#11101a",activeBg:"#574775",activeText:"#fffaff",tagBg:"#3d3951",tagText:"#f4f0ff",tagHoverBg:"#574775",cardBg:"#302c43",cardHoverBg:"#49415f",selectedBg:"#574775"},
-    sunset:{name:"落日余晖",bg:"#241a19",panel:"#382622",panel2:"#52372d",line:"#795344",text:"#fff1e5",muted:"#c9a995",accent:"#ff9b72",headerBg:"#170f0e",activeBg:"#82442f",activeText:"#fff7f0",tagBg:"#52372d",tagText:"#fff1e5",tagHoverBg:"#82442f",cardBg:"#432b25",cardHoverBg:"#684332",selectedBg:"#82442f"},
-    sapphire:{name:"极夜蓝",bg:"#111629",panel:"#1c2440",panel2:"#293457",line:"#465581",text:"#edf1ff",muted:"#a8b3d2",accent:"#8da8ff",headerBg:"#080d1c",activeBg:"#344e91",activeText:"#f6f8ff",tagBg:"#293457",tagText:"#edf1ff",tagHoverBg:"#344e91",cardBg:"#222c4b",cardHoverBg:"#35466f",selectedBg:"#344e91"},
-    wine:{name:"葡萄酒红",bg:"#21151d",panel:"#34212e",panel2:"#4b3041",line:"#76516a",text:"#fff0f8",muted:"#c7a8ba",accent:"#df8bb5",headerBg:"#160d13",activeBg:"#713e5c",activeText:"#fff7fb",tagBg:"#4b3041",tagText:"#fff0f8",tagHoverBg:"#713e5c",cardBg:"#3d2939",cardHoverBg:"#5b3b55",selectedBg:"#713e5c"},
-    glacier:{name:"冰川蓝",bg:"#14212a",panel:"#203541",panel2:"#2e4856",line:"#527181",text:"#edfaff",muted:"#acc8d2",accent:"#9ce3f2",headerBg:"#0b151c",activeBg:"#3c7184",activeText:"#ffffff",tagBg:"#2e4856",tagText:"#edfaff",tagHoverBg:"#3c7184",cardBg:"#263f4b",cardHoverBg:"#3a5b6b",selectedBg:"#3c7184"},
-    amber:{name:"琥珀金",bg:"#211b10",panel:"#332916",panel2:"#4c3a1e",line:"#76603a",text:"#fff5dc",muted:"#c8b58a",accent:"#f2c35e",headerBg:"#171207",activeBg:"#79551d",activeText:"#fff9e9",tagBg:"#4c3a1e",tagText:"#fff5dc",tagHoverBg:"#79551d",cardBg:"#3e301b",cardHoverBg:"#5e4824",selectedBg:"#79551d"},
-    rose:{name:"玫瑰金",bg:"#211a1a",panel:"#342727",panel2:"#4b3939",line:"#765b5b",text:"#fff2ef",muted:"#cbb0aa",accent:"#e6a18d",headerBg:"#171010",activeBg:"#825044",activeText:"#fff8f5",tagBg:"#4b3939",tagText:"#fff2ef",tagHoverBg:"#825044",cardBg:"#3d2e2e",cardHoverBg:"#5c4140",selectedBg:"#825044"},
-    royal:{name:"皇家紫",bg:"#171323",panel:"#251d36",panel2:"#382b52",line:"#5b467e",text:"#f5efff",muted:"#b9a9d2",accent:"#c29bff",headerBg:"#0d0917",activeBg:"#65469a",activeText:"#fffaff",tagBg:"#382b52",tagText:"#f5efff",tagHoverBg:"#65469a",cardBg:"#2e2344",cardHoverBg:"#4a356b",selectedBg:"#65469a"},
-    sand:{name:"沙漠沙色",bg:"#28231c",panel:"#3b3328",panel2:"#514637",line:"#796a52",text:"#fff7e9",muted:"#c7b99f",accent:"#e4c18a",headerBg:"#19150f",activeBg:"#806344",activeText:"#fffaf1",tagBg:"#514637",tagText:"#fff7e9",tagHoverBg:"#806344",cardBg:"#443a2d",cardHoverBg:"#66543d",selectedBg:"#806344"},
-    magenta:{name:"霓虹洋红",bg:"#201221",panel:"#321e35",panel2:"#4c2b50",line:"#784b7c",text:"#fff0ff",muted:"#c9a7ce",accent:"#f08aff",headerBg:"#140a16",activeBg:"#793d83",activeText:"#fff8ff",tagBg:"#4c2b50",tagText:"#fff0ff",tagHoverBg:"#793d83",cardBg:"#3c2541",cardHoverBg:"#603a68",selectedBg:"#793d83"}
+    midnight:{name:"午夜黑",hue:220,accentHue:165,saturation:62},
+    orange:{name:"阳光橙",hue:28,accentHue:38,saturation:92},
+    blue:{name:"远峰蓝",hue:211,accentHue:205,saturation:65},
+    jade:{name:"青瓷绿",hue:155,accentHue:145,saturation:55},
+    sakura:{name:"樱花粉",hue:330,accentHue:340,saturation:48},
+    ivory:{name:"暖玉白",hue:35,accentHue:25,saturation:45},
+    violet:{name:"暮色紫",hue:260,accentHue:270,saturation:55},
+    crimson:{name:"赤焰",hue:355,accentHue:5,saturation:70},
+    ocean:{name:"深海青",hue:190,accentHue:185,saturation:65},
+    graphite:{name:"石墨灰",hue:215,accentHue:205,saturation:10},
+    lavender:{name:"薰衣草",hue:270,accentHue:285,saturation:50},
+    sunset:{name:"落日余晖",hue:18,accentHue:12,saturation:88},
+    sapphire:{name:"极夜蓝",hue:225,accentHue:235,saturation:72},
+    wine:{name:"葡萄酒红",hue:325,accentHue:335,saturation:48},
+    glacier:{name:"冰川蓝",hue:195,accentHue:190,saturation:45},
+    amber:{name:"琥珀金",hue:42,accentHue:38,saturation:85},
+    rose:{name:"玫瑰金",hue:12,accentHue:8,saturation:55},
+    royal:{name:"皇家紫",hue:275,accentHue:280,saturation:62},
+    sand:{name:"沙漠沙色",hue:34,accentHue:28,saturation:42},
+    magenta:{name:"霓虹洋红",hue:300,accentHue:295,saturation:85},
+    cobalt:{name:"钴蓝",hue:225,accentHue:215,saturation:82},
+    coral:{name:"珊瑚海",hue:8,accentHue:12,saturation:78},
+    peach:{name:"蜜桃奶霜",hue:24,accentHue:18,saturation:70},
+    mint:{name:"薄荷冰",hue:170,accentHue:165,saturation:45},
+    lemon:{name:"柠檬汽水",hue:55,accentHue:48,saturation:88},
+    cherry:{name:"樱桃可乐",hue:345,accentHue:350,saturation:72},
+    sky:{name:"晴空万里",hue:200,accentHue:205,saturation:58},
+    lavenderMist:{name:"紫雾晨曦",hue:285,accentHue:280,saturation:48},
+    copper:{name:"复古铜",hue:22,accentHue:28,saturation:52},
+    teal:{name:"孔雀蓝",hue:180,accentHue:175,saturation:72},
+    forest:{name:"松针森林",hue:140,accentHue:150,saturation:52},
+    plum:{name:"梅子紫",hue:290,accentHue:310,saturation:52},
+    steel:{name:"钛银灰",hue:210,accentHue:205,saturation:12},
+    berry:{name:"莓果酸奶",hue:320,accentHue:330,saturation:55},
+    lagoon:{name:"蓝绿泻湖",hue:185,accentHue:190,saturation:65},
+    tangerine:{name:"柑橘汽水",hue:35,accentHue:25,saturation:92},
+    iceRose:{name:"冰玫瑰",hue:345,accentHue:350,saturation:40},
+    champagne:{name:"香槟金",hue:40,accentHue:35,saturation:58},
+    indigo:{name:"靛青夜航",hue:245,accentHue:255,saturation:75},
+    neon:{name:"赛博电光",hue:185,accentHue:300,saturation:95}
   };
-  const THEME_KEY = "stronghold_ui_theme";
-  function applyTheme(key) {
-    const theme = THEMES[key] || THEMES.midnight;
-    const root = document.documentElement.style;
-    Object.entries(theme).forEach(([k,v]) => {
-      if (k !== "name") {
-        const cssName = k.replace(/[A-Z]/g, letter => "-" + letter.toLowerCase());
-        root.setProperty("--" + cssName, v);
-      }
-    });
-    document.body.dataset.theme = key;
-    try { localStorage.setItem(THEME_KEY, key); } catch (_) {}
-    document.querySelectorAll("[data-theme-choice]").forEach(btn => btn.classList.toggle("active", btn.dataset.themeChoice === key));
+
+  function hsl(h,s,l) { return "hsl(" + ((h%360)+360)%360 + " " + s + "% " + l + "%)"; }
+  function buildThemePalette(t, scheme) {
+    const h=t.hue, a=t.accentHue, sat=t.saturation;
+    if (scheme === "light") return {
+      bg:hsl(h,Math.min(30,sat*.22),98), panel:hsl(h,Math.min(24,sat*.18),100),
+      panel2:hsl(h,Math.min(28,sat*.28),94), line:hsl(h,Math.min(25,sat*.25),80),
+      text:hsl(h,20,16), muted:hsl(h,12,43), accent:hsl(a,Math.max(42,sat*.75),40),
+      headerBg:hsl(h,Math.min(28,sat*.25),91), activeBg:hsl(a,Math.max(35,sat*.42),87),
+      activeText:hsl(a,50,18), tagBg:hsl(a,Math.max(25,sat*.3),94),
+      tagText:hsl(a,38,22), tagHoverBg:hsl(a,Math.max(35,sat*.45),82),
+      cardBg:hsl(h,Math.min(20,sat*.16),100), cardHoverBg:hsl(a,Math.max(22,sat*.25),91),
+      selectedBg:hsl(a,Math.max(35,sat*.42),86)
+    };
+    return {
+      bg:hsl(h,Math.min(35,sat*.35),9), panel:hsl(h,Math.min(34,sat*.38),14),
+      panel2:hsl(h,Math.min(38,sat*.42),20), line:hsl(h,Math.min(35,sat*.4),31),
+      text:hsl(h,18,94), muted:hsl(h,12,69), accent:hsl(a,Math.max(48,sat*.82),72),
+      headerBg:hsl(h,Math.min(38,sat*.4),6), activeBg:hsl(a,Math.max(35,sat*.5),25),
+      activeText:hsl(a,20,98), tagBg:hsl(h,Math.min(38,sat*.42),21),
+      tagText:hsl(h,18,94), tagHoverBg:hsl(a,Math.max(35,sat*.5),31),
+      cardBg:hsl(h,Math.min(34,sat*.38),17), cardHoverBg:hsl(a,Math.max(30,sat*.42),27),
+      selectedBg:hsl(a,Math.max(35,sat*.5),25)
+    };
   }
+  const THEME_KEY = "stronghold_ui_theme";
+  const SCHEME_KEY = "stronghold_ui_color_scheme";
   let activeTheme = "midnight";
-  try { activeTheme = localStorage.getItem(THEME_KEY) || "midnight"; } catch (_) {}
+  let colorSchemeMode = "auto";
+  let systemDarkQuery = null;
+  try {
+    activeTheme = localStorage.getItem(THEME_KEY) || "midnight";
+    colorSchemeMode = localStorage.getItem(SCHEME_KEY) || "auto";
+  } catch (_) {}
+  function resolvedColorScheme() {
+    if (colorSchemeMode === "light" || colorSchemeMode === "dark") return colorSchemeMode;
+    return systemDarkQuery && systemDarkQuery.matches ? "dark" : "light";
+  }
+  function applyTheme(key) {
+    activeTheme = THEMES[key] ? key : "midnight";
+    const t = THEMES[activeTheme];
+    const scheme = resolvedColorScheme();
+    const palette = buildThemePalette(t, scheme);
+    const root = document.documentElement.style;
+    Object.entries(palette).forEach(([k,v]) => {
+      const cssName = k.replace(/[A-Z]/g, letter => "-" + letter.toLowerCase());
+      root.setProperty("--" + cssName, v);
+    });
+    document.documentElement.dataset.colorScheme = scheme;
+    document.body.dataset.theme = activeTheme;
+    try {
+      localStorage.setItem(THEME_KEY, activeTheme);
+      localStorage.setItem(SCHEME_KEY, colorSchemeMode);
+    } catch (_) {}
+    document.querySelectorAll("[data-theme-choice]").forEach(btn => btn.classList.toggle("active", btn.dataset.themeChoice === activeTheme));
+    document.querySelectorAll("[data-scheme-mode]").forEach(btn => btn.classList.toggle("active", btn.dataset.schemeMode === colorSchemeMode));
+  }
+  try {
+    if (window.matchMedia) {
+      systemDarkQuery = window.matchMedia("(prefers-color-scheme: dark)");
+      if (systemDarkQuery.addEventListener) systemDarkQuery.addEventListener("change", () => {
+        if (colorSchemeMode === "auto") applyTheme(activeTheme);
+      });
+      else if (systemDarkQuery.addListener) systemDarkQuery.addListener(() => {
+        if (colorSchemeMode === "auto") applyTheme(activeTheme);
+      });
+    }
+  } catch (_) {}
   applyTheme(activeTheme);
 
   // 增加缺失的导航入口；原页面事件代理可直接处理这些按钮。
@@ -413,12 +485,17 @@
   });
 
   function renderThemePage() {
-    $("#list").innerHTML = '<div class="ban-section"><h2>主题色设置</h2><p class="wave-note">选择一套配色，设置会保存在当前浏览器中。</p><div class="theme-grid">' +
-      Object.entries(THEMES).map(([key,t]) => '<button type="button" class="theme-choice ' + (activeTheme === key ? "active" : "") + '" data-theme-choice="' + key + '"><span class="theme-swatch" style="background:linear-gradient(135deg,' + t.bg + ' 0 33%, ' + t.panel + ' 33% 66%, ' + t.accent + ' 66%)"></span><span><strong>' + t.name + '</strong><small class="wave-note">界面配色预览</small></span></button>').join("") +
+    const schemeButtons = [
+      ["auto","跟随设备昼夜模式"],["light","始终浅色"],["dark","始终深色"]
+    ].map(([mode,label]) => '<button type="button" data-scheme-mode="' + mode + '" class="' + (colorSchemeMode === mode ? "active" : "") + '">' + label + '</button>').join("");
+    $("#list").innerHTML = '<div class="ban-section"><h2>主题色设置</h2><p class="wave-note">共 40 套配色，每套均有明暗两种版本；默认跟随 Android、iOS、Windows、macOS 等设备的系统外观。</p><div class="scheme-mode-row">' + schemeButtons + '</div><div class="theme-grid">' +
+      Object.entries(THEMES).map(([key,t]) => {
+        const light=buildThemePalette(t,"light"), dark=buildThemePalette(t,"dark");
+        return '<button type="button" class="theme-choice ' + (activeTheme === key ? "active" : "") + '" data-theme-choice="' + key + '"><span class="theme-swatch" style="background:linear-gradient(90deg,' + light.bg + ' 0 50%, ' + dark.bg + ' 50% 100%);border:1px solid var(--line)"></span><span><strong>' + t.name + '</strong><small class="wave-note">浅色 / 深色</small></span></button>';
+      }).join("") +
       '</div></div>';
-    $("#detail").innerHTML = '<h2>界面显示</h2><p>当前主题：' + (THEMES[activeTheme] || THEMES.midnight).name + '</p><p class="wave-note">主题仅影响网页颜色，不会修改上游资料。</p>';
+    $("#detail").innerHTML = '<h2>界面显示</h2><p>当前主题：' + THEMES[activeTheme].name + '</p><p>当前模式：' + (colorSchemeMode === "auto" ? "跟随设备（" + resolvedColorScheme() + "色）" : colorSchemeMode === "light" ? "始终浅色" : "始终深色") + '</p><p class="wave-note">自动模式通过系统 prefers-color-scheme 设置判断；也可以手动锁定浅色或深色。</p>';
   }
-
 
   // 覆盖切换逻辑，保证所有新增页面都能进入且工具栏状态正确。
   const previousSwitchTab = switchTab;
@@ -530,6 +607,8 @@
   };
   // 新增按钮、主题切换、Ban 搜索和取消操作。
   $("#list").addEventListener("click", function(event) {
+    const mode = event.target.closest("[data-scheme-mode]");
+    if (mode) { colorSchemeMode = mode.dataset.schemeMode; applyTheme(activeTheme); renderThemePage(); return; }
     const theme = event.target.closest("[data-theme-choice]");
     if (theme) { activeTheme = theme.dataset.themeChoice; applyTheme(activeTheme); renderThemePage(); return; }
   });
@@ -648,12 +727,31 @@
     .covenant-button.active,.covenant-button:hover{background:var(--tag-hover-bg)!important;color:var(--active-text)!important;border-color:var(--accent)!important}
     .pill{background:var(--tag-bg)!important;color:var(--tag-text)!important;border-color:var(--line)!important}
     .pill:hover{background:var(--tag-hover-bg)!important;color:var(--active-text)!important;border-color:var(--accent)!important}
-    /* 干员卡片、盟约覆盖干员及 Ban 控件 */
+    /* 干员/收藏页：覆盖原始 HTML 中写死的 #202833 与 #303c49 */
+    .operator-card,.operator-link-card,#list .operator-card,#list .operator-link-card{
+      background:var(--card-bg)!important;color:var(--text)!important;border-color:var(--line)!important
+    }
+    .operator-card:hover,.operator-link-card:hover,#list .operator-card:hover,#list .operator-link-card:hover{
+      background:var(--card-hover-bg)!important;color:var(--text)!important;border-color:var(--accent)!important
+    }
+    .operator-card.selected,.operator-link-card.selected{
+      background:var(--selected-bg)!important;color:var(--active-text)!important;border-color:var(--accent)!important
+    }
+    /* Ban 页：覆盖原来固定的暗红色 #48272e */
+    .ban-op,.ban-covenant{background:var(--card-bg)!important;color:var(--text)!important;border-color:var(--line)!important}
+    .ban-op:hover,.ban-covenant:hover{background:var(--card-hover-bg)!important;color:var(--text)!important;border-color:var(--accent)!important}
+    .ban-op.banned,.ban-covenant.banned{background:var(--selected-bg)!important;color:var(--active-text)!important;border-color:var(--accent)!important}
+    .ban-op img{background:var(--panel)!important}
+    .scheme-mode-row{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 14px}
+    .scheme-mode-row button{background:var(--tag-bg)!important;color:var(--tag-text)!important;border-color:var(--line)!important}
+    .scheme-mode-row button.active{background:var(--active-bg)!important;color:var(--active-text)!important;border-color:var(--accent)!important}
+
     .operator-card,.operator-link-card,.ban-op,.ban-covenant{background:var(--card-bg)!important;color:var(--text)!important;border-color:var(--line)}
     .operator-card:hover,.operator-link-card:hover,.ban-op:hover,.ban-covenant:hover{background:var(--card-hover-bg)!important;color:var(--text)!important;border-color:var(--accent)}
     .operator-card.selected,.operator-link-card.selected{background:var(--selected-bg)!important;color:var(--active-text)!important;border-color:var(--accent)!important}
     .ban-op.banned,.ban-covenant.banned{background:var(--active-bg)!important;color:var(--active-text)!important;border-color:var(--accent)!important}
-    .operator-name,.operator-link-card,.ban-op,.ban-covenant{color:var(--text)}
+    .operator-name,.operator-link-card,.ban-op,.ban-covenant{color:var(--text)!important}
+    .operator-card .operator-name,.operator-link-card strong,.ban-op span,.ban-covenant span{color:inherit!important}
     .ban-mark{background:var(--active-bg)!important;color:var(--active-text)!important}
     /* 盟约/干员图标周围不再残留旧色底 */
     .bond-icon,.operator-avatar,.operator-link-avatar{background:var(--panel)!important}
