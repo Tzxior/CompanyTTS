@@ -349,19 +349,30 @@
 
   // 主题方案：仅覆盖 CSS 变量，不改变数据或页面结构。
   const THEMES = {
-    midnight: {name:"午夜黑",bg:"#101319",panel:"#191f29",panel2:"#252e3b",line:"#394656",text:"#e9eef5",muted:"#9aa9ba",accent:"#7bceb7"},
-    orange: {name:"阳光橙",bg:"#21170f",panel:"#302116",panel2:"#49301e",line:"#705039",text:"#fff0dc",muted:"#c5a98d",accent:"#ffad55"},
-    blue: {name:"远峰蓝",bg:"#101b2a",panel:"#192a3e",panel2:"#233b55",line:"#385875",text:"#e5f1ff",muted:"#9eb5cc",accent:"#78b9f2"},
-    jade: {name:"青瓷绿",bg:"#111d1b",panel:"#1b2c28",panel2:"#294039",line:"#45675d",text:"#e5f4ed",muted:"#a1bdb1",accent:"#8bd3b1"},
-    sakura: {name:"樱花粉",bg:"#211820",panel:"#30232f",panel2:"#493244",line:"#6c4a62",text:"#fff0f7",muted:"#c9aabb",accent:"#f0a6c8"},
-    ivory: {name:"暖玉白",bg:"#e9e3d8",panel:"#f7f2e9",panel2:"#e6ded0",line:"#c9bda9",text:"#302b25",muted:"#766d62",accent:"#b87943"}
+    midnight:{name:"午夜黑",bg:"#101319",panel:"#191f29",panel2:"#252e3b",line:"#394656",text:"#e9eef5",muted:"#9aa9ba",accent:"#7bceb7",headerBg:"#090c11",activeBg:"#244a40"},
+    orange:{name:"阳光橙",bg:"#21170f",panel:"#302116",panel2:"#49301e",line:"#705039",text:"#fff0dc",muted:"#c5a98d",accent:"#ffad55",headerBg:"#160e09",activeBg:"#714018"},
+    blue:{name:"远峰蓝",bg:"#101b2a",panel:"#192a3e",panel2:"#233b55",line:"#385875",text:"#e5f1ff",muted:"#9eb5cc",accent:"#78b9f2",headerBg:"#0a1320",activeBg:"#244c70"},
+    jade:{name:"青瓷绿",bg:"#111d1b",panel:"#1b2c28",panel2:"#294039",line:"#45675d",text:"#e5f4ed",muted:"#a1bdb1",accent:"#8bd3b1",headerBg:"#091411",activeBg:"#285a48"},
+    sakura:{name:"樱花粉",bg:"#211820",panel:"#30232f",panel2:"#493244",line:"#6c4a62",text:"#fff0f7",muted:"#c9aabb",accent:"#f0a6c8",headerBg:"#160f16",activeBg:"#70415d"},
+    ivory:{name:"暖玉白",bg:"#e9e3d8",panel:"#f7f2e9",panel2:"#e6ded0",line:"#c9bda9",text:"#302b25",muted:"#766d62",accent:"#b87943",headerBg:"#d9d0c1",activeBg:"#e6c5a3"},
+    violet:{name:"暮色紫",bg:"#171426",panel:"#242039",panel2:"#353052",line:"#514a75",text:"#f0edff",muted:"#b2accd",accent:"#b8a0ff",headerBg:"#0e0b1b",activeBg:"#51417d"},
+    crimson:{name:"赤焰",bg:"#211315",panel:"#321d22",panel2:"#4a292f",line:"#754149",text:"#ffedf0",muted:"#c9a4aa",accent:"#f07883",headerBg:"#160b0e",activeBg:"#74313b"},
+    mint:{name:"薄荷苏打",bg:"#101e20",panel:"#1a2d30",panel2:"#294247",line:"#41676a",text:"#e5fbf7",muted:"#a2c4bf",accent:"#71dfc5",headerBg:"#091416",activeBg:"#245b55"},
+    ocean:{name:"深海青",bg:"#0d1b22",panel:"#142b35",panel2:"#1e3d49",line:"#355d69",text:"#e2f7fb",muted:"#9bbbc3",accent:"#62c9df",headerBg:"#071218",activeBg:"#1b5868"},
+    graphite:{name:"石墨灰",bg:"#191b1e",panel:"#25292e",panel2:"#343a42",line:"#4d565f",text:"#f0f2f4",muted:"#aab2ba",accent:"#c0c8d0",headerBg:"#101215",activeBg:"#48545f"},
+    lavender:{name:"薰衣草",bg:"#1c1a27",panel:"#292638",panel2:"#3d3951",line:"#5d5677",text:"#f4f0ff",muted:"#b8b0ce",accent:"#c5a9ff",headerBg:"#11101a",activeBg:"#574775"},
+    sunset:{name:"落日余晖",bg:"#241a19",panel:"#382622",panel2:"#52372d",line:"#795344",text:"#fff1e5",muted:"#c9a995",accent:"#ff9b72",headerBg:"#170f0e",activeBg:"#82442f"},
+    emerald:{name:"翡翠林",bg:"#101d18",panel:"#1a2d23",panel2:"#294335",line:"#426b52",text:"#e8f6eb",muted:"#a7c5ad",accent:"#83d69a",headerBg:"#09140e",activeBg:"#275b38"}
   };
   const THEME_KEY = "stronghold_ui_theme";
   function applyTheme(key) {
     const theme = THEMES[key] || THEMES.midnight;
     const root = document.documentElement.style;
     Object.entries(theme).forEach(([k,v]) => {
-      if (k !== "name") root.setProperty("--" + k, v);
+      if (k !== "name") {
+        const cssName = k.replace(/[A-Z]/g, letter => "-" + letter.toLowerCase());
+        root.setProperty("--" + cssName, v);
+      }
     });
     document.body.dataset.theme = key;
     try { localStorage.setItem(THEME_KEY, key); } catch (_) {}
@@ -374,10 +385,9 @@
   // 增加缺失的导航入口；原页面事件代理可直接处理这些按钮。
   const nav = $("#tabs");
   const extraTabs = [
-    ["ban","Ban 管理"],
-    ["waves","敌人波次"],
-    ["enemyTypes","敌人类型"],
-    ["theme","主题设置"]
+    ["ban","Ban干员"],
+    ["waves","敌人"],
+    ["theme","主题色"]
   ];
   extraTabs.forEach(([id,label]) => {
     if (!nav.querySelector('[data-tab="' + id + '"]')) {
@@ -389,6 +399,24 @@
     }
   });
 
+  // Navigation order: operators, favorites, ban, then the reference-data pages.
+  const tabLabels = {
+    operators:"干员", favorites:"收藏干员", ban:"Ban干员",
+    covenants:"盟约", equipment:"装备", strategies:"策略",
+    bosses:"首领", maps:"地图", waves:"敌人", theme:"主题色"
+  };
+  Object.entries(tabLabels).forEach(([id,label]) => {
+    const button = nav.querySelector('[data-tab="' + id + '"]');
+    if (button) button.textContent = label;
+  });
+  const tabOrder = ["operators","favorites","ban","covenants","equipment","strategies","bosses","maps","waves","theme"];
+  tabOrder.forEach(id => {
+    const button = nav.querySelector('[data-tab="' + id + '"]');
+    if (button) nav.appendChild(button);
+  });
+  const obsoleteTypesTab = nav.querySelector('[data-tab="enemyTypes"]');
+  if (obsoleteTypesTab) obsoleteTypesTab.remove();
+
   function renderThemePage() {
     $("#list").innerHTML = '<div class="ban-section"><h2>主题色设置</h2><p class="wave-note">选择一套配色，设置会保存在当前浏览器中。</p><div class="theme-grid">' +
       Object.entries(THEMES).map(([key,t]) => '<button type="button" class="theme-choice ' + (activeTheme === key ? "active" : "") + '" data-theme-choice="' + key + '"><span class="theme-swatch" style="background:linear-gradient(135deg,' + t.bg + ' 0 33%, ' + t.panel + ' 33% 66%, ' + t.accent + ' 66%)"></span><span><strong>' + t.name + '</strong><small class="wave-note">界面配色预览</small></span></button>').join("") +
@@ -396,31 +424,11 @@
     $("#detail").innerHTML = '<h2>界面显示</h2><p>当前主题：' + (THEMES[activeTheme] || THEMES.midnight).name + '</p><p class="wave-note">主题仅影响网页颜色，不会修改上游资料。</p>';
   }
 
-  function renderEnemyTypesPage() {
-    const types = typeData || {};
-    const entries = TYPE_ORDER.map(code => {
-      const data = types[code] || {};
-      const first = data.firstHalfVariants || [];
-      const second = data.secondHalfVariants || [];
-      return {
-        code,
-        name: data.typeName || TYPE_LABEL[code],
-        icon: data.typeIconPath ? ASSET + data.typeIconPath : ASSET + "data/enemy_types/" + code + ".webp",
-        first,
-        second
-      };
-    });
-    $("#list").innerHTML = '<div class="ban-section"><h2>敌人特征分类</h2><p class="wave-note">分类名称、图标及对应敌人均读取上游 enemy_types.json，共 ' + entries.length + ' 类。</p><div class="enemy-grid">' +
-      entries.map(t => '<div class="enemy-card"><img src="' + t.icon + '" alt=""><div><strong>' + esc(t.name) + '</strong><small>前半程 ' + t.first.length + ' 种 · 后半程 ' + t.second.length + ' 种</small></div></div>').join("") +
-      '</div></div>';
-    $("#detail").innerHTML = '<h2>各类特征包含的敌人</h2>' +
-      entries.map(t => '<div class="trait"><strong><img src="' + t.icon + '" style="width:20px;height:20px;object-fit:contain;vertical-align:middle;margin-right:6px" alt="">' + esc(t.name) + '</strong><p class="wave-note">前半程：' + (t.first.map(x => esc(x.enemyName)).join("、") || "无") + '</p><p class="wave-note">后半程：' + (t.second.map(x => esc(x.enemyName)).join("、") || "无") + '</p></div>').join("");
-  }
 
   // 覆盖切换逻辑，保证所有新增页面都能进入且工具栏状态正确。
   const previousSwitchTab = switchTab;
   switchTab = function(tab) {
-    if (!["ban","waves","enemyTypes","theme"].includes(tab)) return previousSwitchTab(tab);
+    if (!["ban","waves","theme"].includes(tab)) return previousSwitchTab(tab);
     currentTab = tab;
     selectedName = null;
     $("#search").value = "";
@@ -434,7 +442,6 @@
 
   const previousRenderList = renderList;
   renderList = function() {
-    if (currentTab === "enemyTypes") { renderEnemyTypesPage(); return; }
     if (currentTab === "theme") { renderThemePage(); return; }
     return previousRenderList();
   };
@@ -443,7 +450,7 @@
   const previousUpdateToolbar = updateToolbar;
   updateToolbar = function() {
     previousUpdateToolbar();
-    const special = ["ban","waves","enemyTypes","theme"].includes(currentTab);
+    const special = ["ban","waves","theme"].includes(currentTab);
     $("#search").style.display = special ? "none" : "";
     $("#covenantToolbar").style.display = currentTab === "operators" ? "" : "none";
   };
@@ -470,39 +477,62 @@
 
   // 盟约、装备、策略和首领列表统一补上原始资源图标。
   const previousRenderDetail = renderDetail;
+  function getDataIcon(item, tab) {
+    if (!item) return "";
+    if (tab === "equipment") return ASSET + "data/equipment/" + encodeURIComponent(item.name) + ".webp";
+    if (tab === "strategies") return ASSET + "data/strategies/" + encodeURIComponent(item.id) + ".webp";
+    if (tab === "covenants") return bondImg(item.name);
+    return "";
+  }
   renderDetail = function(item) {
-    let html = previousRenderDetail(item);
-    if (item && item.iconPath) {
-      html = '<img class="detail-avatar" src="' + ASSET + item.iconPath + '" alt="">' + html;
-    } else if (item && item.bondType) {
-      html = '<img class="detail-avatar" src="' + bondImg(item.name) + '" alt="">' + html;
+    // Use the original detail renderer as the base. Operator details get exactly one WEBP portrait.
+    let html = oldRenderDetail(item);
+    if (!item) return html;
+    if (item.coreCovenants) {
+      html = '<img class="detail-avatar" src="' + opImg(item.name) + '" alt="">' +
+        '<div class="ban-state">' +
+        (banned.has(item.name) ? '<b style="color:#ff8994">⛔ 已加入 Ban 名单</b>' : '<span style="color:var(--muted)">当前未 Ban</span>') +
+        '<button type="button" id="toggleDetailBan" style="display:block;margin:9px 0">' + (banned.has(item.name) ? "取消 Ban" : "Ban 此干员") + '</button></div>' + html;
+    } else if (item.enemyId) {
+      html = '<img class="detail-avatar" src="' + bossImg(item.enemyId) + '" alt="">' + html;
+    } else {
+      const icon = getDataIcon(item, currentTab);
+      if (icon) html = '<img class="detail-avatar" src="' + icon + '" alt="">' + html;
+      else if (item.bondType) html = '<img class="detail-avatar" src="' + bondImg(item.name) + '" alt="">' + html;
+    }
+
+    // Add WEBP portraits to the "covered operators" buttons inside covenant details.
+    if (currentTab === "covenants" && item.bondType) {
+      html = html.replace(
+        /(<button\\b(?=[^>]*class="operator-link-card")(?=[^>]*data-open-operator="([^"]+)")[^>]*>)/g,
+        (tag, _unused, name) => tag + '<img class="operator-link-avatar" src="' + opImg(name) + '" alt="" loading="lazy">'
+      );
     }
     return html;
   };
-
   const previousRenderListWithIcons = renderList;
+  function renderDataListWithIcons() {
+    const records = getRecords(currentTab);
+    const keyword = $("#search").value.trim().toLowerCase();
+    const filtered = records.map((item,index) => ({item,index}))
+      .filter(x => !keyword || getSearchText(x.item).includes(keyword));
+    $("#list").innerHTML = filtered.map(x => {
+      const item = x.item;
+      const icon = getDataIcon(item, currentTab);
+      return '<div class="item ' + (selectedName === getName(item) ? "selected" : "") + '" data-index="' + x.index + '">' +
+        (icon ? '<img class="data-icon" src="' + icon + '" alt="" loading="lazy">' : '') +
+        '<span><strong>' + esc(getName(item)) + '</strong><small>' + esc(item.initiator || item.bondType || item.description || "") + '</small></span></div>';
+    }).join("") || '<div class="empty-message">没有找到匹配资料</div>';
+    const selected = records.find(item => getName(item) === selectedName);
+    $("#detail").innerHTML = renderDetail(selected);
+  }
   renderList = function() {
-    if (currentTab === "enemyTypes") { renderEnemyTypesPage(); return; }
     if (currentTab === "theme") { renderThemePage(); return; }
-    if (["ban","waves"].includes(currentTab)) return previousRenderListWithIcons();
-    if (["equipment","strategies","covenants"].includes(currentTab)) {
-      const records = getRecords(currentTab);
-      const keyword = $("#search").value.trim().toLowerCase();
-      const filtered = records.map((item,index) => ({item,index})).filter(x => !keyword || getSearchText(x.item).includes(keyword));
-      $("#list").innerHTML = filtered.map(x => {
-        const item = x.item;
-        const icon = item.iconPath ? ASSET + item.iconPath : currentTab === "covenants" ? bondImg(item.name) : "";
-        return '<div class="item ' + (selectedName === getName(item) ? "selected" : "") + '" data-index="' + x.index + '">' +
-          (icon ? '<img class="data-icon" src="' + icon + '" alt="" loading="lazy">' : '') +
-          '<span><strong>' + esc(getName(item)) + '</strong><small>' + esc(item.initiator || item.bondType || item.description || "") + '</small></span></div>';
-      }).join("") || '<div class="empty-message">没有找到匹配资料</div>';
-      const selected = records.find(item => getName(item) === selectedName);
-      $("#detail").innerHTML = renderDetail(selected);
-      return;
-    }
+    if (currentTab === "waves") { renderWavePage(); return; }
+    if (currentTab === "ban") { renderBanPage(); return; }
+    if (["equipment","strategies","covenants"].includes(currentTab)) { renderDataListWithIcons(); return; }
     return previousRenderListWithIcons();
   };
-
   // 新增按钮、主题切换、Ban 搜索和取消操作。
   $("#list").addEventListener("click", function(event) {
     const theme = event.target.closest("[data-theme-choice]");
@@ -525,7 +555,84 @@
     }
   });
 
-  // 新版导航及主题初始化。
+
+  // ===== 本次界面修订：主题、导航顺序、顶部精简、图标与间距 =====
+  const refinementStyle = document.createElement("style");
+  refinementStyle.textContent = `
+    header{background:var(--header-bg)!important;padding:10px 16px!important;min-height:42px!important;border-bottom:1px solid var(--line)}
+    header h1{font-size:19px!important;margin:0!important;line-height:1.2}
+    header p,#resolutionChip,#status,#stats{display:none!important}
+    body{display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden}
+    #tabs{order:0;flex:0 0 auto;margin:0!important;padding:6px 12px!important;background:var(--header-bg);border-bottom:1px solid var(--line);gap:6px!important;flex-wrap:nowrap!important;overflow-x:auto;overflow-y:hidden}
+    #tabs button{flex:0 0 auto;padding:7px 12px!important;border-radius:6px!important;white-space:nowrap}
+    #tabs button.active{background:var(--active-bg)!important;border-color:var(--accent)!important;color:var(--text)!important;box-shadow:inset 0 -2px 0 var(--accent)}
+    #tabs button:hover{background:var(--panel2);border-color:var(--accent)}
+    main{padding-top:8px!important;gap:6px!important;min-height:0;flex:1 1 auto}
+    .covenant-row{align-items:flex-start;margin-bottom:5px;row-gap:6px}
+    .covenant-row-label{padding-top:7px!important}
+    .covenant-buttons{row-gap:7px!important;column-gap:6px!important}
+    .covenant-button{line-height:1.4;transition:background .15s,border-color .15s,transform .15s,box-shadow .15s}
+    .covenant-button:hover{background:var(--active-bg)!important;border-color:var(--accent)!important;color:var(--text)!important;transform:translateY(-1px);box-shadow:0 2px 8px #0003}
+    .covenant-button.active{background:var(--active-bg)!important;border-color:var(--accent)!important}
+    .operator-link-card{display:flex;align-items:center;justify-content:flex-start;gap:7px;text-align:left;padding:6px 8px!important;min-height:48px}
+    .operator-link-avatar{width:34px;height:34px;object-fit:cover;flex:0 0 34px;border-radius:5px;background:var(--bg)}
+    .operator-link-card small{margin-left:auto}
+    .data-icon{width:44px;height:44px;object-fit:contain;flex:0 0 44px;background:var(--panel2);padding:3px}
+    .item{min-height:56px;line-height:1.45}
+    .item span{min-width:0;display:flex;flex-direction:column;gap:3px}
+    .item small{line-height:1.35}
+    .detail-avatar{width:78px;height:78px}
+    .theme-grid{grid-template-columns:repeat(auto-fill,minmax(165px,1fr))}
+    .theme-choice{border-color:var(--line);background:var(--panel2)}
+    .theme-choice:hover{border-color:var(--accent);background:var(--active-bg)}
+    .theme-choice.active{background:var(--active-bg);border-color:var(--accent);color:var(--text)}
+    @media(max-aspect-ratio:0.88){
+      header{padding:8px 11px!important;min-height:36px!important}
+      header h1{font-size:16px!important}
+      #tabs{padding:5px 7px!important}
+      #tabs button{padding:6px 9px!important;font-size:11px}
+    }
+  `;
+  document.head.appendChild(refinementStyle);
+
+  // Header contains only the title. Navigation follows it immediately.
+  const titleHeader = document.querySelector("header");
+  if (titleHeader) {
+    titleHeader.querySelectorAll("p,#resolutionChip").forEach(node => node.remove());
+    const heading = titleHeader.querySelector("h1");
+    Array.from(titleHeader.children).forEach(node => { if (node !== heading) node.remove(); });
+  }
+  const appMain = document.querySelector("main");
+  if (nav && appMain && nav.parentElement !== document.body) {
+    document.body.insertBefore(nav, appMain);
+  }
+
+  // Remove old screen-resolution display; detection remains active for layout profile.
+  const resolutionChip = document.getElementById("resolutionChip");
+  if (resolutionChip) resolutionChip.remove();
+
+  // Refresh theme variables now that header and selected-tab variables are styled.
+  applyTheme(activeTheme);
+
+  // Ensure renamed pages are routed to their intended renderers.
+  const finalSwitchTab = switchTab;
+  switchTab = function(tab) {
+    if (tab === "ban" || tab === "waves" || tab === "theme") {
+      currentTab = tab;
+      selectedName = null;
+      $("#search").value = "";
+      updateTabButtons();
+      updateToolbar();
+      $("#search").style.display = "none";
+      $("#covenantToolbar").style.display = "none";
+      $("#filter").style.display = "none";
+      renderList();
+      return;
+    }
+    finalSwitchTab(tab);
+  };
+
+  // Final navigation and theme initialization.
   const tabState = currentTab;
   if (tabState === "operators") {
     renderStats();
