@@ -2282,6 +2282,38 @@ loadDatabase();
     .theme-choice{background:var(--card-bg)!important;color:var(--text)!important;border-color:var(--line)!important}
     .theme-choice:hover,.theme-choice.active{background:var(--active-bg)!important;color:var(--active-text)!important;border-color:var(--accent)!important}
   `;
+  semanticThemeStyle.textContent += `
+    /* 全站可交互控件统一采用「干员页-盟约按钮」的视觉样式 */
+    button, [role="button"], .pill, .operator-card, .operator-link-card,
+    .ban-op, .ban-covenant, .theme-choice, .item {
+      background:var(--tag-bg)!important;
+      color:var(--tag-text)!important;
+      border:1px solid var(--line)!important;
+      border-radius:5px!important;
+      transition:background .15s,border-color .15s,color .15s,transform .15s,box-shadow .15s!important;
+    }
+    button:hover, [role="button"]:hover, .pill:hover, .operator-card:hover,
+    .operator-link-card:hover, .ban-op:hover, .ban-covenant:hover,
+    .theme-choice:hover, .item:hover {
+      background:var(--tag-hover-bg)!important;
+      color:var(--active-text)!important;
+      border-color:var(--accent)!important;
+    }
+    button.active, button.selected, button.banned,
+    [role="button"].active, [role="button"].selected, [role="button"].banned,
+    .operator-card.selected, .item.selected, .theme-choice.active {
+      background:var(--active-bg)!important;
+      color:var(--active-text)!important;
+      border-color:var(--accent)!important;
+    }
+    button:focus-visible, [role="button"]:focus-visible, .pill:focus-visible,
+    .operator-card:focus-visible, .operator-link-card:focus-visible,
+    .ban-op:focus-visible, .ban-covenant:focus-visible,
+    .theme-choice:focus-visible, .item:focus-visible {
+      outline:2px solid var(--accent)!important;
+      outline-offset:2px;
+    }
+`;
   document.head.appendChild(semanticThemeStyle);
   applyTheme(activeTheme);
 
