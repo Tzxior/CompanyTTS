@@ -2308,6 +2308,36 @@ loadDatabase();
       outline:2px solid var(--accent)!important;
       outline-offset:2px;
     }
+    /* 页面中还有用 div/span 实现的可点击条目，不能只给原生 button 套样式 */
+    html body main #list .operator-card[data-operator],
+    html body main #list .item[data-index],
+    html body main #detail .pill[data-open-covenant] {
+      box-sizing:border-box!important;
+      padding:7px 12px!important;
+      font-size:13px!important;
+      line-height:1.4!important;
+      border:1px solid var(--line)!important;
+      border-radius:5px!important;
+      background:var(--tag-bg)!important;
+      color:var(--tag-text)!important;
+      cursor:pointer!important;
+      transition:background .15s,border-color .15s,transform .15s,box-shadow .15s!important;
+    }
+    html body main #list .operator-card[data-operator]:hover,
+    html body main #list .item[data-index]:hover,
+    html body main #detail .pill[data-open-covenant]:hover {
+      background:var(--tag-hover-bg)!important;
+      border-color:var(--accent)!important;
+      color:var(--active-text)!important;
+      transform:translateY(-1px);
+      box-shadow:0 2px 8px #0003;
+    }
+    html body main #list .operator-card[data-operator].selected,
+    html body main #list .item[data-index].selected {
+      background:var(--tag-hover-bg)!important;
+      border-color:var(--accent)!important;
+      color:var(--active-text)!important;
+    }
 `;
   document.head.appendChild(semanticThemeStyle);
   applyTheme(activeTheme);
