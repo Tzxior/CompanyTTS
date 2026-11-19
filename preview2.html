@@ -1604,11 +1604,11 @@ loadDatabase();
       rows.forEach(op => {
         const fav = favoriteOperators.has(op.name);
         const isBanned = banned.has(op.name);
-        html += '<div class="operator-card tier-' + tier + (selectedName === op.name ? ' selected' : '') + (isBanned ? ' banned' : '') + '" data-operator="' + esc(op.name) + '" title="' + esc(op.name) + '">' +
+        html += '<button type="button" class="operator-card covenant-button core tier-' + tier + (selectedName === op.name ? ' selected' : '') + (isBanned ? ' banned' : '') + '" data-operator="' + esc(op.name) + '" title="' + esc(op.name) + '">' +
           (isBanned ? '<span class="ban-mark">BAN</span>' : '') +
           '<img class="operator-avatar" src="' + opImg(op.name) + '" alt="" loading="lazy">' +
           '<span class="operator-name">' + esc(op.name) + '</span>' +
-          '<span class="operator-heart ' + (fav ? '' : 'empty') + '" data-favorite="' + esc(op.name) + '" title="' + (fav ? "取消收藏" : "收藏干员") + '">' + (fav ? "❤️" : "🩶") + '</span></div>';
+          '<span class="operator-heart ' + (fav ? '' : 'empty') + '" data-favorite="' + esc(op.name) + '" title="' + (fav ? "取消收藏" : "收藏干员") + '">' + (fav ? "❤️" : "🩶") + '</span></button>';
       });
       html += '</div></div>';
     }
