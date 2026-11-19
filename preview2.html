@@ -481,7 +481,7 @@ footer {
   <button data-tab="strategies">策略</button>
   <button data-tab="bosses">首领</button>
   <button data-tab="maps">地图</button>
-  <button data-tab="favorites">收藏干员</button>
+  <button type="button" class="covenant-button core" data-tab="favorites">收藏干员</button>
 </div>
 
 <div class="toolbar">
@@ -1033,8 +1033,9 @@ function renderOperatorCards(records) {
       const favorite = isFavorite(op.name);
 
       html += `
-        <div
-          class="operator-card tier-${tier} ${
+        <button
+          type="button"
+          class="operator-card covenant-button core tier-${tier} ${
             selected ? "selected" : ""
           }"
           data-operator="${escapeHTML(op.name)}"
@@ -1053,7 +1054,7 @@ function renderOperatorCards(records) {
             ${escapeHTML(op.name)}
           </span>
 
-        </div>
+        </button>
       `;
     }
 
@@ -1634,13 +1635,13 @@ loadDatabase();
       covenants.map(c => {
         const members = covenantOps(c.name);
         const count = members.filter(op => banned.has(op.name)).length;
-        return '<button type="button" class="ban-covenant ' + (count === members.length && count ? "banned" : "") + '" data-ban-covenant="' + esc(c.name) + '"><img class="bond-icon" src="' + bondImg(c.name) + '" alt="">' + esc(c.name) + ' <small>' + count + '/' + members.length + '</small></button>';
+        return '<button type="button" class="covenant-button core ban-covenant ' + (count === members.length && count ? "banned" : "") + '" data-ban-covenant="' + esc(c.name) + '"><img class="bond-icon" src="' + bondImg(c.name) + '" alt="">' + esc(c.name) + ' <small>' + count + '/' + members.length + '</small></button>';
       }).join("") +
       '</div></div><div class="ban-section"><h3>单独 Ban 干员</h3><div class="ban-grid">' +
-      ops.map(op => '<button type="button" class="ban-op ' + (banned.has(op.name) ? "banned" : "") + '" data-ban-operator="' + esc(op.name) + '"><img src="' + opImg(op.name) + '" alt="" loading="lazy">' + esc(op.name) + '</button>').join("") +
+      ops.map(op => '<button type="button" class="covenant-button core ban-op ' + (banned.has(op.name) ? "banned" : "") + '" data-ban-operator="' + esc(op.name) + '"><img src="' + opImg(op.name) + '" alt="" loading="lazy">' + esc(op.name) + '</button>').join("") +
       '</div></div></div>';
     $("#detail").innerHTML = '<h2>当前 Ban 名单（' + bannedOps.length + '）</h2><button type="button" id="clearBansButton">一键清空 Ban</button>' +
-      (bannedOps.length ? '<div class="ban-grid" style="margin-top:12px">' + bannedOps.map(op => '<button type="button" class="ban-op banned" data-ban-operator="' + esc(op.name) + '"><img src="' + opImg(op.name) + '" alt="">' + esc(op.name) + ' ×</button>').join("") + '</div>' : '<p class="empty-message">当前没有 Ban 干员</p>');
+      (bannedOps.length ? '<div class="ban-grid" style="margin-top:12px">' + bannedOps.map(op => '<button type="button" class="covenant-button core ban-op banned" data-ban-operator="' + esc(op.name) + '"><img src="' + opImg(op.name) + '" alt="">' + esc(op.name) + ' ×</button>').join("") + '</div>' : '<p class="empty-message">当前没有 Ban 干员</p>');
   }
 
   function renderWavePage() {
@@ -1654,11 +1655,11 @@ loadDatabase();
     const filtered = candidates;
     $("#list").innerHTML = '<div class="wave-panel">' +
       '<div class="ban-section"><h3>敌人特征（最多同时高亮 3 类）</h3><div class="wave-type-row">' +
-      TYPE_ORDER.map(code => '<button type="button" class="wave-type ' + (selectedTypes.includes(code) ? "active" : "") + '" data-enemy-type="' + code + '"><img src="' + ASSET + 'data/enemy_types/' + code + '.webp" alt="">' + esc(TYPE_LABEL[code]) + '</button>').join("") +
+      TYPE_ORDER.map(code => '<button type="button" class="covenant-button core wave-type ' + (selectedTypes.includes(code) ? "active" : "") + '" data-enemy-type="' + code + '"><img src="' + ASSET + 'data/enemy_types/' + code + '.webp" alt="">' + esc(TYPE_LABEL[code]) + '</button>').join("") +
       '<button type="button" id="clearEnemyTypes">取消全部高亮</button></div></div>' +
       '<div class="ban-section"><h3>波次</h3><div class="wave-rounds">' +
-      rounds.map(n => '<button type="button" class="wave-round-button ' + (selectedRound === n ? "active" : "") + '" data-round="' + n + '">' + n + '</button>').join("") +
-      '<button type="button" class="wave-round-button ' + (selectedRound === "14" ? "active" : "") + '" data-round="14">14 · 首领</button><button type="button" class="wave-round-button ' + (selectedRound === "15" ? "active" : "") + '" data-round="15">15 · 首领</button>' +
+      rounds.map(n => '<button type="button" class="covenant-button core wave-round-button ' + (selectedRound === n ? "active" : "") + '" data-round="' + n + '">' + n + '</button>').join("") +
+      '<button type="button" class="covenant-button core wave-round-button ' + (selectedRound === "14" ? "active" : "") + '" data-round="14">14 · 首领</button><button type="button" class="covenant-button core wave-round-button ' + (selectedRound === "15" ? "active" : "") + '" data-round="15">15 · 首领</button>' +
       '</div></div>';
     if (selectedRound === "14" || selectedRound === "15") {
       const bosses = spawnData.endgame && spawnData.endgame[selectedRound] || [];
@@ -1995,7 +1996,7 @@ loadDatabase();
     $("#list").innerHTML = '<div class="ban-section"><h2>主题色设置</h2><p class="wave-note">共 40 套配色，每套均有明暗两种版本；默认跟随 Android、iOS、Windows、macOS 等设备的系统外观。</p><div class="scheme-mode-row">' + schemeButtons + '</div><div class="theme-grid">' +
       Object.entries(THEMES).map(([key,t]) => {
         const light=buildThemePalette(t,"light"), dark=buildThemePalette(t,"dark");
-        return '<button type="button" class="theme-choice ' + (activeTheme === key ? "active" : "") + '" data-theme-choice="' + key + '"><span class="theme-swatch" style="background:linear-gradient(90deg,' + light.bg + ' 0 50%, ' + dark.bg + ' 50% 100%);border:1px solid var(--line)"></span><span><strong>' + t.name + '</strong><small class="wave-note">浅色 / 深色</small></span></button>';
+        return '<button type="button" class="covenant-button core theme-choice ' + (activeTheme === key ? "active" : "") + '" data-theme-choice="' + key + '"><span class="theme-swatch" style="background:linear-gradient(90deg,' + light.bg + ' 0 50%, ' + dark.bg + ' 50% 100%);border:1px solid var(--line)"></span><span><strong>' + t.name + '</strong><small class="wave-note">浅色 / 深色</small></span></button>';
       }).join("") +
       '</div></div>';
     $("#detail").innerHTML = '<h2>界面显示</h2><p>当前主题：' + THEMES[activeTheme].name + '</p><p>当前模式：' + (colorSchemeMode === "auto" ? "跟随设备（" + resolvedColorScheme() + "色）" : colorSchemeMode === "light" ? "始终浅色" : "始终深色") + '</p><p class="wave-note">自动模式通过系统 prefers-color-scheme 设置判断；也可以手动锁定浅色或深色。</p>';
@@ -2042,13 +2043,13 @@ loadDatabase();
       covenants.map(c => {
         const members = covenantOps(c.name);
         const count = members.filter(op => banned.has(op.name)).length;
-        return '<button type="button" class="ban-covenant ' + (count ? "banned" : "") + '" data-ban-covenant="' + esc(c.name) + '"><img class="bond-icon" src="' + bondImg(c.name) + '" alt="">' + esc(c.name) + ' <small>' + count + '/' + members.length + '</small></button>';
+        return '<button type="button" class="covenant-button core ban-covenant ' + (count ? "banned" : "") + '" data-ban-covenant="' + esc(c.name) + '"><img class="bond-icon" src="' + bondImg(c.name) + '" alt="">' + esc(c.name) + ' <small>' + count + '/' + members.length + '</small></button>';
       }).join("") +
       '</div></div><div class="ban-section"><h3>单独添加 / 取消干员 Ban</h3><input id="banSearch" placeholder="搜索干员名称……" style="width:100%;padding:8px;margin:5px 0 9px;background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:6px"><div class="ban-grid" id="banOperatorGrid">' +
-      ops.map(op => '<button type="button" class="ban-op ' + (banned.has(op.name) ? "banned" : "") + '" data-ban-operator="' + esc(op.name) + '"><img src="' + opImg(op.name) + '" alt="" loading="lazy">' + esc(op.name) + (banned.has(op.name) ? " ✓" : "") + '</button>').join("") +
+      ops.map(op => '<button type="button" class="covenant-button core ban-op ' + (banned.has(op.name) ? "banned" : "") + '" data-ban-operator="' + esc(op.name) + '"><img src="' + opImg(op.name) + '" alt="" loading="lazy">' + esc(op.name) + (banned.has(op.name) ? " ✓" : "") + '</button>').join("") +
       '</div></div></div>';
     $("#detail").innerHTML = '<h2>当前 Ban 名单（' + bannedOps.length + '）</h2><button type="button" id="clearBansButton">清空全部 Ban</button>' +
-      (bannedOps.length ? '<div class="ban-grid" style="margin-top:12px">' + bannedOps.map(op => '<button type="button" class="ban-op banned" data-ban-operator="' + esc(op.name) + '"><img src="' + opImg(op.name) + '" alt="">' + esc(op.name) + '　取消 ×</button>').join("") + '</div>' : '<p class="empty-message">当前没有 Ban 干员</p>');
+      (bannedOps.length ? '<div class="ban-grid" style="margin-top:12px">' + bannedOps.map(op => '<button type="button" class="covenant-button core ban-op banned" data-ban-operator="' + esc(op.name) + '"><img src="' + opImg(op.name) + '" alt="">' + esc(op.name) + '　取消 ×</button>').join("") + '</div>' : '<p class="empty-message">当前没有 Ban 干员</p>');
   };
 
   // 盟约、装备、策略和首领列表统一补上原始资源图标。
@@ -2337,6 +2338,47 @@ loadDatabase();
       background:var(--tag-hover-bg)!important;
       border-color:var(--accent)!important;
       color:var(--active-text)!important;
+    }
+    /* Requested controls share the .covenant-button.core visual treatment.
+       Component-specific layout (icons, swatches, grids) is preserved. */
+    html body #tabs button.covenant-button,
+    html body main #list button.covenant-button,
+    html body main #detail button.covenant-button {
+      box-sizing:border-box!important;
+      padding:7px 12px!important;
+      font-size:13px!important;
+      line-height:1.4!important;
+      border:1px solid var(--line)!important;
+      border-radius:5px!important;
+      background:var(--tag-bg)!important;
+      color:var(--tag-text)!important;
+      white-space:nowrap!important;
+      transition:background .15s,border-color .15s,transform .15s,box-shadow .15s!important;
+    }
+    html body #tabs button.covenant-button:hover,
+    html body main #list button.covenant-button:hover,
+    html body main #detail button.covenant-button:hover {
+      background:var(--tag-hover-bg)!important;
+      border-color:var(--accent)!important;
+      color:var(--active-text)!important;
+      transform:translateY(-1px);
+      box-shadow:0 2px 8px #0003;
+    }
+    html body #tabs button.covenant-button.active,
+    html body main #list button.covenant-button.active,
+    html body main #list button.covenant-button.selected,
+    html body main #list button.covenant-button.banned,
+    html body main #detail button.covenant-button.active,
+    html body main #detail button.covenant-button.selected,
+    html body main #detail button.covenant-button.banned {
+      background:var(--tag-hover-bg)!important;
+      border-color:var(--accent)!important;
+      color:var(--active-text)!important;
+    }
+    html body main #list button.operator-card.covenant-button {
+      text-align:center;
+      font-family:inherit;
+      cursor:pointer!important;
     }
 `;
   document.head.appendChild(semanticThemeStyle);
