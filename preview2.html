@@ -2380,6 +2380,22 @@ loadDatabase();
       font-family:inherit;
       cursor:pointer!important;
     }
+    /* Outrank the older card/Ban hover and selected-state rules. */
+    html body main #list .operator-grid > button.operator-card.covenant-button:hover,
+    html body main #list .ban-panel .ban-grid > button.covenant-button:hover {
+      background:var(--tag-hover-bg)!important;
+      border-color:var(--accent)!important;
+      color:var(--active-text)!important;
+    }
+    html body main #list .operator-grid > button.operator-card.covenant-button.selected,
+    html body main #list .ban-panel .ban-grid > button.covenant-button.active,
+    html body main #list .ban-panel .ban-grid > button.covenant-button.selected,
+    html body main #list .ban-panel .ban-grid > button.covenant-button.banned,
+    html body main #detail .ban-grid > button.covenant-button.banned {
+      background:var(--tag-hover-bg)!important;
+      border-color:var(--accent)!important;
+      color:var(--active-text)!important;
+    }
 `;
   document.head.appendChild(semanticThemeStyle);
   applyTheme(activeTheme);
