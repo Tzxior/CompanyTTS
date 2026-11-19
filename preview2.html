@@ -2144,9 +2144,7 @@ loadDatabase();
     header p,#resolutionChip,#status,#stats{display:none!important}
     body{display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden}
     #tabs{order:0;flex:0 0 auto;margin:0!important;padding:6px 12px!important;background:var(--header-bg);border-bottom:1px solid var(--line);gap:6px!important;flex-wrap:nowrap!important;overflow-x:auto;overflow-y:hidden}
-    #tabs button{flex:0 0 auto;padding:7px 12px!important;border-radius:6px!important;white-space:nowrap}
-    #tabs button.active{background:var(--active-bg)!important;border-color:var(--accent)!important;color:var(--text)!important;box-shadow:inset 0 -2px 0 var(--accent)}
-    #tabs button:hover{background:var(--panel2);border-color:var(--accent)}
+    #tabs button{flex:0 0 auto}
     main{padding-top:8px!important;gap:6px!important;min-height:0;flex:1 1 auto}
     .covenant-row{align-items:flex-start;margin-bottom:5px;row-gap:6px}
     .covenant-row-label{padding-top:7px!important}
@@ -2170,7 +2168,6 @@ loadDatabase();
       header{padding:8px 11px!important;min-height:36px!important}
       header h1{font-size:16px!important}
       #tabs{padding:5px 7px!important}
-      #tabs button{padding:6px 9px!important;font-size:11px}
     }
   `;
   document.head.appendChild(refinementStyle);
@@ -2223,9 +2220,6 @@ loadDatabase();
   const semanticThemeStyle = document.createElement("style");
   semanticThemeStyle.textContent = `
     /* 全部导航标签统一使用当前主题，选中标签使用独立高对比文字色 */
-    #tabs button{background:var(--panel2)!important;color:var(--text)!important;border-color:var(--line)!important}
-    #tabs button.active,#tabs button.active:hover{background:var(--active-bg)!important;color:var(--active-text)!important;border-color:var(--accent)!important}
-    #tabs button:hover{background:var(--tag-hover-bg)!important;color:var(--active-text)!important;border-color:var(--accent)!important}
     /* 盟约筛选按钮及详情中的盟约标签 */
     .covenant-button{background:var(--tag-bg)!important;color:var(--tag-text)!important;border-color:var(--line)!important}
     .covenant-button.active,.covenant-button:hover{background:var(--tag-hover-bg)!important;color:var(--active-text)!important;border-color:var(--accent)!important}
@@ -2287,6 +2281,7 @@ loadDatabase();
     html body button {
       padding:7px 12px!important;
       font-size:13px!important;
+      line-height:1.4!important;
       border-radius:5px!important;
       white-space:nowrap;
       background:var(--tag-bg)!important;
