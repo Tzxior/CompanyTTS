@@ -257,31 +257,11 @@ button.active {
   gap:8px;
 }
 
-.operator-card {
-  position:relative;
-  min-height:24px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:6px 12px 6px 6px;
-  border:1px solid var(--tier-color);
-  border-radius:10px;
-  background:#202833;
-  cursor:pointer;
-  text-align:center;
-  transition:background .15s,border-color .15s;
-}
+.operator-card{position:relative;min-height:24px;display:flex;align-items:center;justify-content:center;text-align:center}
 
-.operator-card:hover {
-  background:#303c49;
-  border-width:2px;
-  padding:6px 12px 6px 6px;
-}
 
-.operator-card.selected {
-  background:#30483f;
-  box-shadow:inset 0 0 0 1px var(--accent);
-}
+
+
 
 .operator-name {
   font-size:13px;
@@ -1508,7 +1488,7 @@ loadDatabase();
 (function () {
   const ASSET = "https://raw.githubusercontent.com/LBEILC/StrongholdAssistant/main/src/ui/public/assets/";
   const styleNode = document.createElement("style");
-  styleNode.textContent = "\n.operator-card{gap:6px;justify-content:flex-start;padding:5px 8px}\n.operator-avatar{width:34px;height:34px;object-fit:cover;border-radius:6px;flex:0 0 34px;background:#141a21}\n.operator-card.banned{opacity:.58;filter:grayscale(1);border-style:dashed}\n.ban-mark{position:absolute;left:5px;top:4px;background:#7b3038;color:#fff;border-radius:4px;padding:1px 4px;font-size:10px;z-index:1}\n.covenant-button{display:inline-flex;align-items:center;gap:5px}\n.bond-icon{width:20px;height:20px;object-fit:contain;vertical-align:middle}\n.detail-avatar{width:88px;height:88px;object-fit:cover;border-radius:10px;float:right;margin:0 0 12px 14px;background:#141a21}\n.ban-panel{display:flex;flex-direction:column;gap:12px}\n.ban-section,.enemy-card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px}\n.ban-grid,.wave-type-row,.wave-rounds{display:flex;flex-wrap:wrap;gap:7px}\n.ban-op{display:inline-flex;align-items:center;gap:6px;padding:5px 8px}\n.ban-op img{width:26px;height:26px;object-fit:cover;border-radius:5px}\n/* Ban 卡片选中态由末尾主题规则统一控制 */\n.wave-type{display:inline-flex;align-items:center;gap:6px}\n.wave-type img{width:23px;height:23px;object-fit:contain}\n.wave-type.active{background:#285044;border-color:var(--accent)}\n.wave-round-button{min-width:42px}\n.enemy-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:8px}\n.enemy-card{display:flex;align-items:center;gap:9px;min-width:0}\n.enemy-card img{width:54px;height:54px;object-fit:contain;flex:0 0 54px;background:#141a21;border-radius:6px}\n.enemy-card.highlighted{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}\n.enemy-card.dimmed{opacity:.35}\n.enemy-card small,.wave-note{display:block;color:var(--muted);margin-top:4px;font-size:12px}\n";
+  styleNode.textContent = "\n.operator-card{gap:6px;justify-content:flex-start}\n.operator-avatar{width:34px;height:34px;object-fit:cover;border-radius:6px;flex:0 0 34px;background:#141a21}\n\n.ban-mark{position:absolute;left:5px;top:4px;background:#7b3038;color:#fff;border-radius:4px;padding:1px 4px;font-size:10px;z-index:1}\n.covenant-button{display:inline-flex;align-items:center;gap:5px}\n.bond-icon{width:20px;height:20px;object-fit:contain;vertical-align:middle}\n.detail-avatar{width:88px;height:88px;object-fit:cover;border-radius:10px;float:right;margin:0 0 12px 14px;background:#141a21}\n.ban-panel{display:flex;flex-direction:column;gap:12px}\n.ban-section,.enemy-card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px}\n.ban-grid,.wave-type-row,.wave-rounds{display:flex;flex-wrap:wrap;gap:7px}\n.ban-op{display:inline-flex;align-items:center;gap:6px}\n.ban-op img{width:26px;height:26px;object-fit:cover;border-radius:5px}\n/* Ban 卡片选中态由末尾主题规则统一控制 */\n.wave-type{display:inline-flex;align-items:center;gap:6px}\n.wave-type img{width:23px;height:23px;object-fit:contain}\n\n.wave-round-button{min-width:42px}\n.enemy-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:8px}\n.enemy-card{display:flex;align-items:center;gap:9px;min-width:0}\n.enemy-card img{width:54px;height:54px;object-fit:contain;flex:0 0 54px;background:#141a21;border-radius:6px}\n.enemy-card.highlighted{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}\n.enemy-card.dimmed{opacity:.35}\n.enemy-card small,.wave-note{display:block;color:var(--muted);margin-top:4px;font-size:12px}\n";
   document.head.appendChild(styleNode);
   const BOND = {
     "乌萨斯":"ursus","伊比利亚":"iberia","卡西米尔":"kazimierz","叙拉古":"siracusa","炎":"yan","维多利亚":"victoria","莱塔尼亚":"lethania","萨尔贡":"sargon","谢拉格":"kjerag","阿戈尔":"egir","不屈":"indom","助力":"deput","协防干员":"empty","坚守":"stead","奇迹":"mira","奥术":"arcane","投资人":"invest","灵巧":"skillful","独行":"solo","突袭":"raid","精准":"preci","绝技":"sunt","聚合":"doc","调和":"mani","迅捷":"swift","远见":"visi"
@@ -1793,9 +1773,9 @@ loadDatabase();
     footer{display:none}
     .ban-section{padding:9px}.ban-section h3{margin:2px 0 7px}
     .theme-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px}
-    .theme-choice{display:flex;align-items:center;gap:9px;text-align:left;padding:10px}
+    .theme-choice{display:flex;align-items:center;gap:9px;text-align:left}
     .theme-swatch{width:38px;height:38px;flex:0 0 38px;border-radius:8px;border:1px solid #ffffff55;display:block}
-    .theme-choice.active{outline:2px solid var(--accent);outline-offset:1px}
+    
     .resolution-chip{margin-left:auto;color:var(--muted);font-size:10px;white-space:nowrap}
     .data-icon{width:42px;height:42px;object-fit:contain;vertical-align:middle;margin-right:10px;border-radius:6px}
     .item{display:flex;align-items:center;gap:4px;padding:8px 10px}
@@ -1992,7 +1972,7 @@ loadDatabase();
   function renderThemePage() {
     const schemeButtons = [
       ["auto","跟随设备昼夜模式"],["light","始终浅色"],["dark","始终深色"]
-    ].map(([mode,label]) => '<button type="button" data-scheme-mode="' + mode + '" class="' + (colorSchemeMode === mode ? "active" : "") + '">' + label + '</button>').join("");
+    ].map(([mode,label]) => '<button type="button" class="covenant-button core ' + (colorSchemeMode === mode ? "active" : "") + '" data-scheme-mode="' + mode + '">' + label + '</button>').join("");
     $("#list").innerHTML = '<div class="ban-section"><h2>主题色设置</h2><p class="wave-note">共 40 套配色，每套均有明暗两种版本；默认跟随 Android、iOS、Windows、macOS 等设备的系统外观。</p><div class="scheme-mode-row">' + schemeButtons + '</div><div class="theme-grid">' +
       Object.entries(THEMES).map(([key,t]) => {
         const light=buildThemePalette(t,"light"), dark=buildThemePalette(t,"dark");
@@ -2162,9 +2142,9 @@ loadDatabase();
     .item small{line-height:1.35}
     .detail-avatar{width:78px;height:78px}
     .theme-grid{grid-template-columns:repeat(auto-fill,minmax(165px,1fr))}
-    .theme-choice{border-color:var(--line);background:var(--panel2)}
-    .theme-choice:hover{border-color:var(--accent);background:var(--active-bg)}
-    .theme-choice.active{background:var(--active-bg);border-color:var(--accent);color:var(--text)}
+    
+    
+    
     @media(max-aspect-ratio:0.88){
       header{padding:8px 11px!important;min-height:36px!important}
       header h1{font-size:16px!important}
@@ -2220,183 +2200,17 @@ loadDatabase();
 
   const semanticThemeStyle = document.createElement("style");
   semanticThemeStyle.textContent = `
-    /* 全部导航标签统一使用当前主题，选中标签使用独立高对比文字色 */
-    /* 盟约筛选按钮及详情中的盟约标签 */
+    /* Shared appearance for every covenant-button */
     .covenant-button{background:var(--tag-bg)!important;color:var(--tag-text)!important;border-color:var(--line)!important}
-    .covenant-button.active,.covenant-button:hover{background:var(--tag-hover-bg)!important;color:var(--active-text)!important;border-color:var(--accent)!important}
-    .pill{background:var(--tag-bg)!important;color:var(--tag-text)!important;border-color:var(--line)!important}
-    .pill:hover{background:var(--tag-hover-bg)!important;color:var(--active-text)!important;border-color:var(--accent)!important}
+    .covenant-button:hover,.covenant-button.active,.covenant-button.selected,.covenant-button.banned{
+      background:var(--tag-hover-bg)!important;color:var(--active-text)!important;border-color:var(--accent)!important
+    }
     .scheme-mode-row{display:flex;flex-wrap:wrap;gap:7px;margin:10px 0 14px}
-    .scheme-mode-row button{background:var(--tag-bg)!important;color:var(--tag-text)!important;border-color:var(--line)!important}
-    .scheme-mode-row button.active{background:var(--active-bg)!important;color:var(--active-text)!important;border-color:var(--accent)!important}
-
-    /* 干员、收藏、Ban 干员及 Ban 盟约：高优先级统一跟随当前主题 */
-    html body main #list .operator-grid > .operator-card,
-    html body main #list .operator-link-card,
-    html body main #detail .operator-link-card,
-    html body main #list .ban-panel .ban-grid > .ban-op,
-    html body main #list .ban-panel .ban-grid > .ban-covenant,
-    html body main #detail .ban-grid > .ban-op{
-      background:var(--card-bg,var(--panel2))!important;
-      color:var(--text)!important;
-      border-color:var(--line)!important;
-    }
-    html body main #list .operator-grid > .operator-card:hover,
-    html body main #list .operator-link-card:hover,
-    html body main #detail .operator-link-card:hover,
-    html body main #list .ban-panel .ban-grid > .ban-op:hover,
-    html body main #list .ban-panel .ban-grid > .ban-covenant:hover,
-    html body main #detail .ban-grid > .ban-op:hover{
-      background:var(--card-hover-bg,var(--active-bg))!important;
-      color:var(--text)!important;
-      border-color:var(--accent)!important;
-    }
-    html body main #list .operator-grid > .operator-card.selected,
-    html body main #list .operator-link-card.selected,
-    html body main #detail .operator-link-card.selected{
-      background:var(--selected-bg,var(--active-bg))!important;
-      color:var(--active-text)!important;
-      border-color:var(--accent)!important;
-    }
-    html body main #list .ban-panel .ban-grid > .ban-op.banned,
-    html body main #list .ban-panel .ban-grid > .ban-covenant.banned,
-    html body main #detail .ban-grid > .ban-op.banned{
-      background:var(--selected-bg,var(--active-bg))!important;
-      color:var(--active-text)!important;
-      border-color:var(--accent)!important;
-    }
-    html body main #list .ban-panel .ban-grid > .ban-covenant,
-    html body main #list .ban-panel .ban-grid > .ban-op{
-      min-height:42px;
-    }
-    .operator-name,.operator-link-card,.ban-op,.ban-covenant{color:var(--text)!important}
-    .operator-card .operator-name,.operator-link-card strong,.ban-op span,.ban-covenant span{color:inherit!important}
+    .ban-panel .ban-grid>.ban-op,.ban-panel .ban-grid>.ban-covenant{min-height:42px}
+    .operator-name{color:inherit}
     .ban-mark{background:var(--active-bg)!important;color:var(--active-text)!important}
-    /* 盟约/干员图标周围不再残留旧色底 */
     .bond-icon,.operator-avatar,.operator-link-avatar{background:var(--panel)!important}
-    .theme-choice{background:var(--card-bg)!important;color:var(--text)!important;border-color:var(--line)!important}
-    .theme-choice:hover,.theme-choice.active{background:var(--active-bg)!important;color:var(--active-text)!important;border-color:var(--accent)!important}
   `;
-  semanticThemeStyle.textContent += `
-    /* 所有按钮直接复用干员页盟约筛选按钮的尺寸、边框和状态样式 */
-    html body button {
-      padding:7px 12px!important;
-      font-size:13px!important;
-      line-height:1.4!important;
-      border-radius:5px!important;
-      white-space:nowrap;
-      background:var(--tag-bg)!important;
-      color:var(--tag-text)!important;
-      border:1px solid var(--line)!important;
-      transition:background .15s,border-color .15s,transform .15s,box-shadow .15s!important;
-    }
-    html body button:hover {
-      background:var(--tag-hover-bg)!important;
-      border-color:var(--accent)!important;
-      color:var(--active-text)!important;
-      transform:translateY(-1px);
-      box-shadow:0 2px 8px #0003;
-    }
-    html body button.active,
-    html body button.selected,
-    html body button.banned,
-    html body #tabs button.active {
-      background:var(--tag-hover-bg)!important;
-      border-color:var(--accent)!important;
-      color:var(--active-text)!important;
-    }
-    html body button:focus-visible {
-      outline:2px solid var(--accent)!important;
-      outline-offset:2px;
-    }
-    /* 页面中还有用 div/span 实现的可点击条目，不能只给原生 button 套样式 */
-    html body main #list .operator-card[data-operator],
-    html body main #list .item[data-index],
-    html body main #detail .pill[data-open-covenant] {
-      box-sizing:border-box!important;
-      padding:7px 12px!important;
-      font-size:13px!important;
-      line-height:1.4!important;
-      border:1px solid var(--line)!important;
-      border-radius:5px!important;
-      background:var(--tag-bg)!important;
-      color:var(--tag-text)!important;
-      cursor:pointer!important;
-      transition:background .15s,border-color .15s,transform .15s,box-shadow .15s!important;
-    }
-    html body main #list .operator-card[data-operator]:hover,
-    html body main #list .item[data-index]:hover,
-    html body main #detail .pill[data-open-covenant]:hover {
-      background:var(--tag-hover-bg)!important;
-      border-color:var(--accent)!important;
-      color:var(--active-text)!important;
-      transform:translateY(-1px);
-      box-shadow:0 2px 8px #0003;
-    }
-    html body main #list .operator-card[data-operator].selected,
-    html body main #list .item[data-index].selected {
-      background:var(--tag-hover-bg)!important;
-      border-color:var(--accent)!important;
-      color:var(--active-text)!important;
-    }
-    /* Requested controls share the .covenant-button.core visual treatment.
-       Component-specific layout (icons, swatches, grids) is preserved. */
-    html body #tabs button.covenant-button,
-    html body main #list button.covenant-button,
-    html body main #detail button.covenant-button {
-      box-sizing:border-box!important;
-      padding:7px 12px!important;
-      font-size:13px!important;
-      line-height:1.4!important;
-      border:1px solid var(--line)!important;
-      border-radius:5px!important;
-      background:var(--tag-bg)!important;
-      color:var(--tag-text)!important;
-      white-space:nowrap!important;
-      transition:background .15s,border-color .15s,transform .15s,box-shadow .15s!important;
-    }
-    html body #tabs button.covenant-button:hover,
-    html body main #list button.covenant-button:hover,
-    html body main #detail button.covenant-button:hover {
-      background:var(--tag-hover-bg)!important;
-      border-color:var(--accent)!important;
-      color:var(--active-text)!important;
-      transform:translateY(-1px);
-      box-shadow:0 2px 8px #0003;
-    }
-    html body #tabs button.covenant-button.active,
-    html body main #list button.covenant-button.active,
-    html body main #list button.covenant-button.selected,
-    html body main #list button.covenant-button.banned,
-    html body main #detail button.covenant-button.active,
-    html body main #detail button.covenant-button.selected,
-    html body main #detail button.covenant-button.banned {
-      background:var(--tag-hover-bg)!important;
-      border-color:var(--accent)!important;
-      color:var(--active-text)!important;
-    }
-    html body main #list button.operator-card.covenant-button {
-      text-align:center;
-      font-family:inherit;
-      cursor:pointer!important;
-    }
-    /* Outrank the older card/Ban hover and selected-state rules. */
-    html body main #list .operator-grid > button.operator-card.covenant-button:hover,
-    html body main #list .ban-panel .ban-grid > button.covenant-button:hover {
-      background:var(--tag-hover-bg)!important;
-      border-color:var(--accent)!important;
-      color:var(--active-text)!important;
-    }
-    html body main #list .operator-grid > button.operator-card.covenant-button.selected,
-    html body main #list .ban-panel .ban-grid > button.covenant-button.active,
-    html body main #list .ban-panel .ban-grid > button.covenant-button.selected,
-    html body main #list .ban-panel .ban-grid > button.covenant-button.banned,
-    html body main #detail .ban-grid > button.covenant-button.banned {
-      background:var(--tag-hover-bg)!important;
-      border-color:var(--accent)!important;
-      color:var(--active-text)!important;
-    }
-`;
   document.head.appendChild(semanticThemeStyle);
   applyTheme(activeTheme);
 
